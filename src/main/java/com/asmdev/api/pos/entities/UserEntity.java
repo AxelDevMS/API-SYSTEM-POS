@@ -61,6 +61,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PurchaseEntity> purchases;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<SaleEntity> sales;
+
     @CreationTimestamp
     private Date createdAt;
 
