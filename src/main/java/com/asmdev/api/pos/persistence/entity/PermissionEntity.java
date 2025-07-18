@@ -1,6 +1,8 @@
-package com.asmdev.api.pos.entities;
+package com.asmdev.api.pos.persistence.entity;
 
 
+import com.asmdev.api.pos.utils.status.ModuleSystem;
+import com.asmdev.api.pos.utils.status.NamePermissions;
 import com.asmdev.api.pos.utils.status.Status;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,23 +12,26 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "role")
-public class RoleEntity {
+@Table(name = "permission")
+public class PermissionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private NamePermissions name;
+
+    @Enumerated(EnumType.STRING)
+    private ModuleSystem module;
 
     private String description;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToMany
-    @JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private List<PermissionEntity> permissions;
+    @ManyToMany(mappedBy = "permissions")
+    private List<RoleEntity> roles;
 
     @CreationTimestamp
     private Date createdAt;
@@ -34,8 +39,6 @@ public class RoleEntity {
     @UpdateTimestamp
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-    private List<UserEntity> user;
 
     public String getId() {
         return id;
@@ -45,12 +48,20 @@ public class RoleEntity {
         this.id = id;
     }
 
-    public String getName() {
+    public NamePermissions getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(NamePermissions name) {
         this.name = name;
+    }
+
+    public ModuleSystem getModule() {
+        return module;
+    }
+
+    public void setModule(ModuleSystem module) {
+        this.module = module;
     }
 
     public String getDescription() {
@@ -69,12 +80,12 @@ public class RoleEntity {
         this.status = status;
     }
 
-    public List<PermissionEntity> getPermissions() {
-        return permissions;
+    public List<RoleEntity> getRoles() {
+        return roles;
     }
 
-    public void setPermissions(List<PermissionEntity> permissions) {
-        this.permissions = permissions;
+    public void setRoles(List<RoleEntity> roles) {
+        this.roles = roles;
     }
 
     public Date getCreatedAt() {
@@ -91,13 +102,5 @@ public class RoleEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public List<UserEntity> getUser() {
-        return user;
-    }
-
-    public void setUser(List<UserEntity> user) {
-        this.user = user;
     }
 }

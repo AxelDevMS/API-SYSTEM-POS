@@ -1,24 +1,22 @@
-package com.asmdev.api.pos.entities;
+package com.asmdev.api.pos.persistence.entity;
 
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "purchase_item")
-public class PurchaseItemsEntity {
+@Table(name = "inventory_movement")
+public class InventoryMovementsEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id")
-    private PurchaseEntity purchase;
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -26,13 +24,10 @@ public class PurchaseItemsEntity {
 
     private int quantity;
 
-    private BigDecimal unitPrice;
+    private String description;
 
     @CreationTimestamp
     private Date createdAt;
-
-    @UpdateTimestamp
-    private Date updatedAt;
 
     public String getId() {
         return id;
@@ -42,12 +37,12 @@ public class PurchaseItemsEntity {
         this.id = id;
     }
 
-    public PurchaseEntity getPurchase() {
-        return purchase;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setPurchase(PurchaseEntity purchase) {
-        this.purchase = purchase;
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public ProductEntity getProduct() {
@@ -66,12 +61,12 @@ public class PurchaseItemsEntity {
         this.quantity = quantity;
     }
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
+    public String getDescription() {
+        return description;
     }
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getCreatedAt() {
@@ -80,13 +75,5 @@ public class PurchaseItemsEntity {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

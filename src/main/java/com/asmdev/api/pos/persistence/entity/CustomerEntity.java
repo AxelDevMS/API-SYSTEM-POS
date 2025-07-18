@@ -1,4 +1,4 @@
-package com.asmdev.api.pos.entities;
+package com.asmdev.api.pos.persistence.entity;
 
 
 import com.asmdev.api.pos.utils.status.Status;
