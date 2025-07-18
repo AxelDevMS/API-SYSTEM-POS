@@ -54,6 +54,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<AuditLogEntity> logs;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<InventoryMovementsEntity> movements;
+
     @CreationTimestamp
     private Date createdAt;
 
@@ -210,6 +213,22 @@ public class UserEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<AuditLogEntity> getLogs() {
+        return logs;
+    }
+
+    public void setLogs(List<AuditLogEntity> logs) {
+        this.logs = logs;
+    }
+
+    public List<InventoryMovementsEntity> getMovements() {
+        return movements;
+    }
+
+    public void setMovements(List<InventoryMovementsEntity> movements) {
+        this.movements = movements;
     }
 
 }
