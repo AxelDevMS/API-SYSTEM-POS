@@ -1,7 +1,7 @@
 package com.asmdev.api.pos.entities;
 
-import com.asmdev.api.pos.utils.status.PurchaseStatus;
-import com.asmdev.api.pos.utils.status.UserStatus;
+
+import com.asmdev.api.pos.utils.status.Status;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,22 +10,20 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "\"user\"")
-public class UserEntity {
+@Table(name = "supplier")
+public class SupplierEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String name;// Nombre's
+    private String name;
 
-    private String lastname; // Apellidos
+    private String contactPerson;
 
-    private String email; // Correo
+    private String phone;
 
-    private String password; // Contraseña
-
-    private String phone; // Numero Telefonico
+    private String email;
 
     private String street;// Calle
 
@@ -39,33 +37,17 @@ public class UserEntity {
 
     private String state; // Estado
 
-    private Date hireDate; // Fecha de contratación
-
-    private Double Salary; // Salario
-
-    private String employeeCode; // Clave unico del sistema
-
     @Enumerated(EnumType.STRING)
-    private UserStatus status; // Status
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private RoleEntity role;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<AuditLogEntity> logs;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<InventoryMovementsEntity> movements;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PurchaseEntity> purchases;
+    private Status status;
 
     @CreationTimestamp
     private Date createdAt;
 
     @UpdateTimestamp
     private Date updatedAt;
+
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL)
+    private List<PurchaseEntity> purchases;
 
     public String getId() {
         return id;
@@ -83,28 +65,12 @@ public class UserEntity {
         this.name = name;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getContactPerson() {
+        return contactPerson;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
     }
 
     public String getPhone() {
@@ -113,6 +79,14 @@ public class UserEntity {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getStreet() {
@@ -163,44 +137,12 @@ public class UserEntity {
         this.state = state;
     }
 
-    public Date getHireDate() {
-        return hireDate;
-    }
-
-    public void setHireDate(Date hireDate) {
-        this.hireDate = hireDate;
-    }
-
-    public Double getSalary() {
-        return Salary;
-    }
-
-    public void setSalary(Double salary) {
-        Salary = salary;
-    }
-
-    public String getEmployeeCode() {
-        return employeeCode;
-    }
-
-    public void setEmployeeCode(String employeeCode) {
-        this.employeeCode = employeeCode;
-    }
-
-    public UserStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
-    }
-
-    public RoleEntity getRole() {
-        return role;
-    }
-
-    public void setRole(RoleEntity role) {
-        this.role = role;
     }
 
     public Date getCreatedAt() {
@@ -217,22 +159,6 @@ public class UserEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public List<AuditLogEntity> getLogs() {
-        return logs;
-    }
-
-    public void setLogs(List<AuditLogEntity> logs) {
-        this.logs = logs;
-    }
-
-    public List<InventoryMovementsEntity> getMovements() {
-        return movements;
-    }
-
-    public void setMovements(List<InventoryMovementsEntity> movements) {
-        this.movements = movements;
     }
 
     public List<PurchaseEntity> getPurchases() {
