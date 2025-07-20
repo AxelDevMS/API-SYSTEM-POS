@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/pos/permissions")
@@ -72,6 +73,12 @@ public class PermissionController {
     public ResponseEntity<ApiResponseDto> executeGetListPermissionBySelect() throws NotFoundException {
         ApiResponseDto response = this.permissionService.executeGetListPermissionsBySelect();
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @PostMapping("upload")
+    public ResponseEntity<ApiResponseDto> executeUploadMassivePermisisons(@RequestParam("file")MultipartFile file) throws BadRequestException {
+        ApiResponseDto response = this.permissionService.executeCreateMassivePermissions(file);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
 }

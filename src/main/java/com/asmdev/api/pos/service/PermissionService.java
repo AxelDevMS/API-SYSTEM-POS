@@ -7,6 +7,7 @@ import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.persistence.entity.PermissionEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
@@ -19,5 +20,6 @@ public interface PermissionService {
     ApiResponseDto executeDisabledPermission(String permissionId, DisabledRegisterDto disabledRegisterDto) throws NotFoundException;
     PermissionEntity getById(String permissionId);
     ApiResponseDto executeGetListPermissionsBySelect() throws NotFoundException;
+    ApiResponseDto executeCreateMassivePermissions(MultipartFile file) throws BadRequestException;
 
 }

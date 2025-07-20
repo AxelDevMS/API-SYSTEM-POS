@@ -8,6 +8,7 @@ import com.asmdev.api.pos.persistence.entity.PermissionEntity;
 import com.asmdev.api.pos.persistence.repository.PermissionRepository;
 import com.asmdev.api.pos.persistence.specification.SpecificationPermission;
 import com.asmdev.api.pos.service.PermissionService;
+import com.asmdev.api.pos.utils.helper.ExcelHelper;
 import com.asmdev.api.pos.utils.status.Status;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +36,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Autowired
     private ValidateInputs validateInputs;
+
 
     @Override
     public ApiResponseDto executeCreatePermission(PermissionDto permissionDto, BindingResult bindingResult) throws BadRequestException {
@@ -120,5 +123,25 @@ public class PermissionServiceImpl implements PermissionService {
 
         List<PermissionDto> permissionsList = permissionListBD.stream().map(permissionMapper::convertToDto).collect(Collectors.toList());
         return new ApiResponseDto(HttpStatus.OK.value(), "Listado de registros", permissionsList);
+    }
+
+    @Override
+    public ApiResponseDto executeCreateMassivePermissions(MultipartFile file) throws BadRequestException {
+        try {
+            List<PermissionDto> permissionDtoList = ExcelHelper.readDataPermissionExcel(file.getInputStream());
+            List<PermissionEntity> permissionSaveAll = permissionDtoList.stream().map(permission->{
+                PermissionEntity permissionEntity = new PermissionEntity();
+                permissionEntity.setName(permission.getName());
+                permissionEntity.setModule(permission.getModule());
+                permissionEntity.setDescription(permission.getDescription());
+                permissionEntity.setStatus(Status.ACTIVE);
+                return permissionEntity;
+            }).toList();
+            permissionRepository.saveAll(permissionSaveAll);
+
+            return new ApiResponseDto(HttpStatus.CREATED.value(),"Se insertado todos los registros de forma exitosa", "total de registros: "+permissionSaveAll.size());
+        }catch (Exception e){
+            throw new BadRequestException("Error al procesar el archivo excel",e);
+        }
     }
 }
