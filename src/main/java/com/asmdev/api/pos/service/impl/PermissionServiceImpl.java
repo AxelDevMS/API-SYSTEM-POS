@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,5 +144,23 @@ public class PermissionServiceImpl implements PermissionService {
         }catch (Exception e){
             throw new BadRequestException("Error al procesar el archivo excel",e);
         }
+    }
+
+    @Override
+    public List<PermissionEntity> validatePermissions(List<PermissionDto> permissionsList) throws NotFoundException, BadRequestException {
+        List<PermissionEntity> permissionsValidateList = new ArrayList<>();
+
+        for (PermissionDto permission : permissionsList) {
+            PermissionEntity permissionBD = this.getById(permission.getId());
+            if (permissionBD == null)
+                throw new NotFoundException("No existe este permiso con ID " + permission.getId());
+
+            if (!permissionBD.getStatus().equals(Status.ACTIVE))
+                throw new BadRequestException("No puedes asignar el permiso " + permissionBD.getName() + " ya que no está ACTIVO");
+
+            permissionsValidateList.add(permissionBD);
+        }
+
+        return permissionsValidateList;
     }
 }

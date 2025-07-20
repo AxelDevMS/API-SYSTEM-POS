@@ -9,6 +9,7 @@ import com.asmdev.api.pos.persistence.entity.PermissionEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PermissionService {
@@ -21,5 +22,6 @@ public interface PermissionService {
     PermissionEntity getById(String permissionId);
     ApiResponseDto executeGetListPermissionsBySelect() throws NotFoundException;
     ApiResponseDto executeCreateMassivePermissions(MultipartFile file) throws BadRequestException;
+    List<PermissionEntity> validatePermissions(List<PermissionDto> permissionsList) throws NotFoundException, BadRequestException;
 
 }
