@@ -9,6 +9,7 @@ import com.asmdev.api.pos.persistence.entity.CategoryEntity;
 import com.asmdev.api.pos.persistence.repository.CategoryRepository;
 import com.asmdev.api.pos.persistence.specification.SpecificationCategory;
 import com.asmdev.api.pos.service.CategoryService;
+import com.asmdev.api.pos.utils.helper.ExcelHelper;
 import com.asmdev.api.pos.utils.status.Status;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -113,4 +115,26 @@ public class CategoryServiceImpl implements CategoryService {
 
         return categoryDB;
     }
+
+    @Override
+    public ApiResponseDto executeCreateMassiveCategories(MultipartFile file) throws BadRequestException {
+        try {
+            List<CategoryDto> categoryListExcel = ExcelHelper.readDataCategoryExcel(file.getInputStream());
+            List<CategoryEntity> categoryListSave =categoryListExcel.stream().map(category->{
+                CategoryEntity categoryEntity = new CategoryEntity();
+                categoryEntity.setName(category.getName());
+                categoryEntity.setDescription(category.getDescription());
+                categoryEntity.setStatus(Status.ACTIVE);
+                return categoryEntity;
+            }).toList();
+
+            this.categoryRepository.saveAll(categoryListSave);
+
+            return new ApiResponseDto(HttpStatus.CREATED.value(),"Se inserto todas la categorias de forma exitosa", "total de registros: "+categoryListSave.size());
+        }catch (Exception e){
+            throw new BadRequestException("Error al procesar el archivo excel ", e);
+        }
+    }
+
+
 }

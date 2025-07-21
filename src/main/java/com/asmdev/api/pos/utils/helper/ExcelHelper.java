@@ -1,9 +1,11 @@
 package com.asmdev.api.pos.utils.helper;
 
+import com.asmdev.api.pos.dto.CategoryDto;
 import com.asmdev.api.pos.dto.PermissionDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.utils.status.ModuleSystem;
 import com.asmdev.api.pos.utils.status.NamePermissions;
+import com.asmdev.api.pos.utils.status.Status;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -38,6 +40,26 @@ public class ExcelHelper {
             return permissionList;
         }catch (Exception e){
             throw new BadRequestException("Error al leer el archivo Excel",e);
+        }
+    }
+
+    public static List<CategoryDto> readDataCategoryExcel(InputStream inputStream) throws BadRequestException {
+        try(Workbook workbook = new XSSFWorkbook(inputStream)){
+            Sheet sheet = workbook.getSheetAt(0);
+            List<CategoryDto> categoryList = new ArrayList<>();
+
+            for (int i = 1; i <=sheet.getLastRowNum(); i++){
+                Row row = sheet.getRow(i);
+
+                CategoryDto categoryDto = new CategoryDto();
+                categoryDto.setName(getCellValue(row.getCell(0)));
+                categoryDto.setDescription(getCellValue(row.getCell(1)));
+
+                categoryList.add(categoryDto);
+            }
+            return categoryList;
+        }catch (Exception e){
+            throw new BadRequestException("Erro al leer el archivo Excel", e);
         }
     }
 

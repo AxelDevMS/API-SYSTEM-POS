@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/pos/categories")
@@ -49,7 +50,7 @@ public class CategoryController {
             BindingResult bindingResult
     ) throws BadRequestException {
         ApiResponseDto response = this.categoryService.executeCreateCategory(categoryDto, bindingResult);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{categoryId}")
@@ -70,5 +71,11 @@ public class CategoryController {
     ) throws BadRequestException, NotFoundException {
         ApiResponseDto response = this.categoryService.executeDisabledCategory(categoryId, disabledRegisterDto, bindingResult);
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @PostMapping("upload")
+    public ResponseEntity<ApiResponseDto> executeUploadMassiveCategories(@RequestParam("file") MultipartFile file) throws BadRequestException {
+        ApiResponseDto response = this.categoryService.executeCreateMassiveCategories(file);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 }

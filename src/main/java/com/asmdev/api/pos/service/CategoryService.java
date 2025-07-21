@@ -7,6 +7,7 @@ import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.persistence.entity.CategoryEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface CategoryService {
 
@@ -17,5 +18,6 @@ public interface CategoryService {
     ApiResponseDto executeUpdateCategory(String categoryId, CategoryDto categoryDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
     ApiResponseDto executeDisabledCategory(String categoryId, DisabledRegisterDto disabledDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;
     CategoryEntity getCategoryById(String categoryId) throws NotFoundException;
+    ApiResponseDto executeCreateMassiveCategories(MultipartFile file) throws BadRequestException;
 
 }
