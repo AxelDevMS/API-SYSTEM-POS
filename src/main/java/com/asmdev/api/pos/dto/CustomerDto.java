@@ -1,38 +1,40 @@
-package com.asmdev.api.pos.persistence.entity;
+package com.asmdev.api.pos.dto;
 
-
+import com.asmdev.api.pos.persistence.entity.SaleEntity;
 import com.asmdev.api.pos.utils.status.Status;
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "customer")
-public class CustomerEntity {
+public class CustomerDto implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(max = 50, message = "El nombre no debe superar los 50 caracteres")
     private String name;
+
 
     private String lastname;
 
+    @Pattern(regexp = "^[0-9]{10}$", message = "El teléfono debe tener 10 dígitos numéricos")
     private String phone;
 
-    @Enumerated(EnumType.STRING)
+    @NotNull(message = "El estatus es obligatorio")
     private Status status;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<SaleEntity> sales;
 
-    @CreationTimestamp
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
-    @UpdateTimestamp
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date updatedAt;
 
     public String getId() {
