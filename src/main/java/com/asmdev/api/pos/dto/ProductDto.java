@@ -1,54 +1,54 @@
-package com.asmdev.api.pos.persistence.entity;
+package com.asmdev.api.pos.dto;
 
 import com.asmdev.api.pos.utils.status.ProductStatus;
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
-@Entity
-@Table(name = "product")
-public class ProductEntity {
+public class ProductDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private String url;
 
+    @NotBlank(message = "El nombre del producto es obligatorio")
+    @Size(max = 100, message = "El nombre no debe superar los 100 caracteres")
     private String name;
 
+
+    @NotBlank(message = "El código del producto es obligatorio")
+    @Size(max = 50, message = "El código no debe superar los 50 caracteres")
     private String code;
 
+    @NotBlank(message = "La descripción del producto es obligatoria")
+    @Size(max = 255, message = "La descripción no debe superar los 255 caracteres")
     private String description;
 
+    @Min(value = 0, message = "El stock no puede ser negativo")
     private int stock;
 
+    @Min(value = 0, message = "El stock mínimo no puede ser negativo")
     private int minimumStock;
 
+    @NotNull(message = "El precio de compra es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El precio de compra debe ser mayor que 0")
     private BigDecimal purchasePrice;
 
+    @NotNull(message = "El precio de venta es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El precio de venta debe ser mayor que 0")
     private BigDecimal salePrice;
 
-    @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    @CreationTimestamp
+    private CategoryDto category;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
-    @UpdateTimestamp
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date updatedAt;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private CategoryEntity category;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<InventoryMovementsEntity> movements;
-
 
     public String getId() {
         return id;
@@ -122,11 +122,11 @@ public class ProductEntity {
         this.salePrice = salePrice;
     }
 
-    public CategoryEntity getCategory() {
+    public CategoryDto getCategory() {
         return category;
     }
 
-    public void setCategory(CategoryEntity category) {
+    public void setCategory(CategoryDto category) {
         this.category = category;
     }
 
@@ -144,14 +144,6 @@ public class ProductEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public List<InventoryMovementsEntity> getMovements() {
-        return movements;
-    }
-
-    public void setMovements(List<InventoryMovementsEntity> movements) {
-        this.movements = movements;
     }
 
     public ProductStatus getStatus() {
