@@ -95,14 +95,32 @@ public class CashRegisterServiceImpl implements CashRegisterService {
     }
 
     @Override
-    public ApiResponseDto executeModifiedStatus(String cashRegisterId, DisabledRegisterDto disabledRegisterDto, BindingResult bindingResult) throws NotFoundException, BadRequestException {
-        CashRegisterEntity cashRegister = this.getCashById(cashRegisterId);
-        if (cashRegister.getStatus().equals(CashRegisterStatus.valueOf(disabledRegisterDto.getStatus())))
-            throw new BadRequestException("La caja ya tiene este mismo estado "+disabledRegisterDto.getStatus());
+    public ApiResponseDto executeCloseCashRegister(String cashRegisterId, CashRegisterDto cashRegisterDto, BindingResult bindingResult) throws NotFoundException, BadRequestException {
 
-        cashRegister.setStatus(CashRegisterStatus.valueOf(disabledRegisterDto.getStatus()));
+        List<ValidateInputDto> inputValidateList = this.validateInputs.validateInputs(bindingResult);
+        if (!inputValidateList.isEmpty())
+            throw new BadRequestException("Campos invalidos", inputValidateList);
+
+        CashRegisterEntity cashRegister = this.getCashById(cashRegisterId);
+        if (!cashRegister.getStatus().equals(CashRegisterStatus.OPEN))
+            throw new BadRequestException("No se puede modifcar la información de la caja ya que no se encuentra abierta");
+
+        BigDecimal totalIncome = this.cashMovementsRepository.sumByCashRegisterAndTypeAndStatus(cashRegisterId,TypeCashMovement.INCOME, CashMovementsStatus.ACTIVE);
+        BigDecimal totalExpense = this.cashMovementsRepository.sumByCashRegisterAndTypeAndStatus(cashRegisterId,TypeCashMovement.EXPENSE,CashMovementsStatus.ACTIVE);
+
+        totalIncome = totalIncome != null ? totalIncome: BigDecimal.ZERO;
+        totalExpense = totalExpense != null ? totalExpense: BigDecimal.ZERO;
+
+        BigDecimal expectedAmount = cashRegister.getOpeningAmount().add(totalIncome).subtract(totalExpense);
+
+        cashRegister.setExpectedAmount(expectedAmount);
+        cashRegister.setClosingAmount(cashRegisterDto.getClosingAmount());
+        cashRegister.setClosedAt(new Date());
+        cashRegister.setNotes(cashRegisterDto.getNotes());
+        cashRegister.setStatus(CashRegisterStatus.CLOSED);
+
         cashRegister = this.cashRegisterRepository.save(cashRegister);
-        return new ApiResponseDto(HttpStatus.OK.value(),"Se actualizo la caja exitosamente", this.cashRegisterMapper.convertToDto(cashRegister));
+        return new ApiResponseDto(HttpStatus.OK.value(), "Se hizo el corte de caja de forma exitosa", this.cashRegisterMapper.convertToDto(cashRegister));
     }
 
     @Override
@@ -111,13 +129,13 @@ public class CashRegisterServiceImpl implements CashRegisterService {
         if (!inputValidateList.isEmpty())
             throw new BadRequestException("Campos invalidos", inputValidateList);
 
-        UserEntity user = this.userService.getUserById(cashRegisterDto.getUser().getId());
-        if (!user.getStatus().equals(UserStatus.ACTIVE))
-            throw new BadRequestException("Este usuario no puede apertura una caja ya que su cuenta no esta activa");
-
         CashRegisterEntity cashRegister = this.getCashById(cashRegisterId);
         if (!cashRegister.getStatus().equals(CashRegisterStatus.OPEN))
             throw new BadRequestException("No se puede modifcar la información de la caja ya que no se encuentra abierta");
+
+        UserEntity user = this.userService.getUserById(cashRegister.getUser().getId());
+        if (!user.getStatus().equals(UserStatus.ACTIVE))
+            throw new BadRequestException("Este usuario no puede apertura una caja ya que su cuenta no esta activa");
 
         long countMovements = this.cashMovementsRepository.countByCashRegisterIdAndStatus(cashRegisterId, CashMovementsStatus.ACTIVE);
         if (countMovements > 0)

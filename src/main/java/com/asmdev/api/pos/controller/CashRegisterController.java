@@ -57,12 +57,12 @@ public class CashRegisterController {
     }
 
     @PatchMapping("/closed/{cashRegisterId}")
-    public ResponseEntity<ApiResponseDto> executeModifiedStatus(
+    public ResponseEntity<ApiResponseDto> executeCloseCashRegister(
             @PathVariable String cashRegisterId,
-            @Valid @RequestBody DisabledRegisterDto disabledRegisterDto,
+            @Valid @RequestBody CashRegisterDto cashRegisterDto,
             BindingResult bindingResult
     ) throws NotFoundException, BadRequestException {
-        ApiResponseDto response = this.cashRegisterService.executeModifiedStatus(cashRegisterId,disabledRegisterDto,bindingResult);
+        ApiResponseDto response = this.cashRegisterService.executeCloseCashRegister(cashRegisterId,cashRegisterDto,bindingResult);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

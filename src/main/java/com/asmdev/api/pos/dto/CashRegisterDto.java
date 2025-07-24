@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CashRegisterDto implements Serializable {
@@ -37,6 +38,12 @@ public class CashRegisterDto implements Serializable {
 
     @Size(max = 500, message = "Las notas deben tener como máximo 500 caracteres")
     private String notes;
+
+    private Integer totalSaleMovements;
+
+    private  Integer totalExpenseMovements;
+
+    private List<CashMovementsDto> movements;
 
     private UserDto user;
 
@@ -140,5 +147,29 @@ public class CashRegisterDto implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<CashMovementsDto> getMovements() {
+        return movements;
+    }
+
+    public void setMovements(List<CashMovementsDto> movements) {
+        this.movements = movements;
+    }
+
+    public Integer getTotalSaleMovements() {
+        return totalSaleMovements;
+    }
+
+    public void setTotalSaleMovements(Integer totalSaleMovements) {
+        this.totalSaleMovements = totalSaleMovements;
+    }
+
+    public Integer getTotalExpenseMovements() {
+        return totalExpenseMovements;
+    }
+
+    public void setTotalExpenseMovements(Integer totalExpenseMovements) {
+        this.totalExpenseMovements = totalExpenseMovements;
     }
 }
