@@ -1,6 +1,7 @@
 package com.asmdev.api.pos.persistence.entity;
 
 
+import com.asmdev.api.pos.utils.method.PaymentMethod;
 import com.asmdev.api.pos.utils.status.PurchaseStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,11 +29,15 @@ public class PurchaseEntity {
 
     private BigDecimal total;
 
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
-    private List<PurchaseItemsEntity> items;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status;
+
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
+    private List<PurchaseItemsEntity> items;
+
 
     @CreationTimestamp
     private Date createdAt;
@@ -103,4 +108,14 @@ public class PurchaseEntity {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 }
+
+
