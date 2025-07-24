@@ -1,17 +1,18 @@
 package com.asmdev.api.pos.service.impl;
 
 import com.asmdev.api.pos.dto.ApiResponseDto;
-import com.asmdev.api.pos.dto.CashRegisterDto;
-import com.asmdev.api.pos.dto.DisabledRegisterDto;
+import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
+import com.asmdev.api.pos.dto.CashRegister.TotalMovementsDto;
 import com.asmdev.api.pos.dto.ValidateInputDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.mapper.CashMovementsMapper;
 import com.asmdev.api.pos.mapper.CashRegisterMapper;
+import com.asmdev.api.pos.persistence.entity.CashMovementsEntity;
 import com.asmdev.api.pos.persistence.entity.CashRegisterEntity;
 import com.asmdev.api.pos.persistence.entity.UserEntity;
 import com.asmdev.api.pos.persistence.repository.CashMovementsRepository;
 import com.asmdev.api.pos.persistence.repository.CashRegisterRepository;
-import com.asmdev.api.pos.service.CashMovementsService;
 import com.asmdev.api.pos.service.CashRegisterService;
 import com.asmdev.api.pos.service.UserService;
 import com.asmdev.api.pos.utils.status.CashMovementsStatus;
@@ -36,6 +37,9 @@ public class CashRegisterServiceImpl implements CashRegisterService {
 
     @Autowired
     private CashRegisterMapper cashRegisterMapper;
+
+    @Autowired
+    private CashMovementsMapper cashMovementsMapper;
 
     @Autowired
     private ValidateInputs validateInputs;
@@ -91,7 +95,28 @@ public class CashRegisterServiceImpl implements CashRegisterService {
     @Override
     public ApiResponseDto executeGetCashRegister(String cashRegisterId) throws NotFoundException {
         CashRegisterEntity cashRegister = this.getCashById(cashRegisterId);
-        return new ApiResponseDto(HttpStatus.OK.value(),"Información de la caja", this.cashRegisterMapper.convertToDto(cashRegister));
+        List<CashMovementsEntity> movementList = this.cashMovementsRepository.findAllByCashRegisterIdAndStatus(cashRegisterId,CashMovementsStatus.ACTIVE);
+
+        BigDecimal totalIncome = movementList.stream()
+                .filter(movement -> movement.getType() == TypeCashMovement.INCOME)
+                .map(CashMovementsEntity::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalExpense = movementList.stream()
+                .filter(movement -> movement.getType() == TypeCashMovement.EXPENSE)
+                .map(CashMovementsEntity::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalSales = movementList.stream()
+                .filter(sale -> sale.getType() == TypeCashMovement.INCOME && sale.getConcept().toLowerCase().contains("venta"))
+                .map(CashMovementsEntity::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        CashRegisterDto cashRegisterDto = this.cashRegisterMapper.convertToDto(cashRegister);
+        cashRegisterDto.setMovements(movementList.stream().map(cashMovementsMapper::convertToDto).toList());
+        cashRegisterDto.setTotals(new TotalMovementsDto(totalIncome,totalExpense,totalSales));
+
+        return new ApiResponseDto(HttpStatus.OK.value(),"Información de la caja", cashRegisterDto);
     }
 
     @Override
@@ -107,6 +132,7 @@ public class CashRegisterServiceImpl implements CashRegisterService {
 
         BigDecimal totalIncome = this.cashMovementsRepository.sumByCashRegisterAndTypeAndStatus(cashRegisterId,TypeCashMovement.INCOME, CashMovementsStatus.ACTIVE);
         BigDecimal totalExpense = this.cashMovementsRepository.sumByCashRegisterAndTypeAndStatus(cashRegisterId,TypeCashMovement.EXPENSE,CashMovementsStatus.ACTIVE);
+        BigDecimal difference = cashRegisterDto.getClosingAmount().subtract(cashRegister.getCurrentAmount());
 
         totalIncome = totalIncome != null ? totalIncome: BigDecimal.ZERO;
         totalExpense = totalExpense != null ? totalExpense: BigDecimal.ZERO;
@@ -115,6 +141,7 @@ public class CashRegisterServiceImpl implements CashRegisterService {
 
         cashRegister.setExpectedAmount(expectedAmount);
         cashRegister.setClosingAmount(cashRegisterDto.getClosingAmount());
+        cashRegister.setDifference(difference);
         cashRegister.setClosedAt(new Date());
         cashRegister.setNotes(cashRegisterDto.getNotes());
         cashRegister.setStatus(CashRegisterStatus.CLOSED);

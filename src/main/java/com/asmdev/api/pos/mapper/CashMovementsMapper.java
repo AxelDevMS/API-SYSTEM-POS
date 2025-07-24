@@ -1,6 +1,8 @@
 package com.asmdev.api.pos.mapper;
 
 import com.asmdev.api.pos.dto.CashMovementsDto;
+import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
+import com.asmdev.api.pos.dto.UserDto;
 import com.asmdev.api.pos.persistence.entity.CashMovementsEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +15,20 @@ public class CashMovementsMapper {
     private ModelMapper modelMapper;
 
     public CashMovementsDto convertToDto(CashMovementsEntity cashMovementsEntity){
-        return this.modelMapper.map(cashMovementsEntity, CashMovementsDto.class);
+        CashMovementsDto dto =  this.modelMapper.map(cashMovementsEntity, CashMovementsDto.class);
+        if (cashMovementsEntity != null){
+            CashRegisterDto cashRegisterDto = new CashRegisterDto();
+            UserDto userDto = new UserDto();
+            cashRegisterDto.setId(cashMovementsEntity.getId());
+            userDto.setId(cashMovementsEntity.getUser().getId());
+            dto.setUser(userDto);
+            dto.setCashRegister(cashRegisterDto);
+        }
+        return dto;
     }
+
+
+
 
     public CashMovementsEntity convertToEntity(CashMovementsDto cashMovementsDto){
         return this.modelMapper.map(cashMovementsDto, CashMovementsEntity.class);

@@ -29,6 +29,8 @@ public class CashRegisterEntity {
 
     private BigDecimal expectedAmount;
 
+    private BigDecimal difference;
+
     private Date openedAt;
 
     private Date closedAt;
@@ -139,5 +141,13 @@ public class CashRegisterEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public BigDecimal getDifference() {
+        return difference;
+    }
+
+    public void setDifference(BigDecimal difference) {
+        this.difference = difference;
     }
 }

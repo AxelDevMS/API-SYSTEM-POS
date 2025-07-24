@@ -1,8 +1,7 @@
 package com.asmdev.api.pos.controller;
 
 import com.asmdev.api.pos.dto.ApiResponseDto;
-import com.asmdev.api.pos.dto.CashRegisterDto;
-import com.asmdev.api.pos.dto.DisabledRegisterDto;
+import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.service.CashRegisterService;

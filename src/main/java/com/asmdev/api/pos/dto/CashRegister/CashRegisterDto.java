@@ -1,5 +1,7 @@
-package com.asmdev.api.pos.dto;
+package com.asmdev.api.pos.dto.CashRegister;
 
+import com.asmdev.api.pos.dto.CashMovementsDto;
+import com.asmdev.api.pos.dto.UserDto;
 import com.asmdev.api.pos.utils.status.CashRegisterStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,6 +30,8 @@ public class CashRegisterDto implements Serializable {
 
     private BigDecimal expectedAmount;
 
+    private BigDecimal difference;
+
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date openedAt;
 
@@ -42,6 +46,8 @@ public class CashRegisterDto implements Serializable {
     private Integer totalSaleMovements;
 
     private  Integer totalExpenseMovements;
+
+    private TotalMovementsDto totals;
 
     private List<CashMovementsDto> movements;
 
@@ -171,5 +177,21 @@ public class CashRegisterDto implements Serializable {
 
     public void setTotalExpenseMovements(Integer totalExpenseMovements) {
         this.totalExpenseMovements = totalExpenseMovements;
+    }
+
+    public BigDecimal getDifference() {
+        return difference;
+    }
+
+    public void setDifference(BigDecimal difference) {
+        this.difference = difference;
+    }
+
+    public TotalMovementsDto getTotals() {
+        return totals;
+    }
+
+    public void setTotals(TotalMovementsDto totals) {
+        this.totals = totals;
     }
 }
