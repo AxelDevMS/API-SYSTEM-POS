@@ -2,9 +2,9 @@ package com.asmdev.api.pos.dto;
 
 import com.asmdev.api.pos.utils.status.CashRegisterStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 
@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CashRegisterDto implements Serializable {
 
     private String id;

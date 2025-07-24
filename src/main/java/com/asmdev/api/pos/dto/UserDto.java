@@ -1,14 +1,15 @@
 package com.asmdev.api.pos.dto;
 
-import com.asmdev.api.pos.persistence.entity.*;
 import com.asmdev.api.pos.utils.status.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
 
 
 import java.io.Serializable;
 import java.util.Date;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto implements Serializable {
 
     private String id;
