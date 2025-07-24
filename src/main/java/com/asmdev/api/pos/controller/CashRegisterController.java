@@ -38,7 +38,7 @@ public class CashRegisterController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate
-    ){
+    ) throws NotFoundException {
         ApiResponseDto response = this.cashRegisterService.executeGetCashRegisterList(page,size,cashRegisterId,status,startDate,endDate);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

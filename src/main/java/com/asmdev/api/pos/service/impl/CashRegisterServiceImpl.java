@@ -3,6 +3,7 @@ package com.asmdev.api.pos.service.impl;
 import com.asmdev.api.pos.dto.ApiResponseDto;
 import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
 import com.asmdev.api.pos.dto.CashRegister.TotalMovementsDto;
+import com.asmdev.api.pos.dto.ListDataPaginationDto;
 import com.asmdev.api.pos.dto.ValidateInputDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
@@ -13,6 +14,7 @@ import com.asmdev.api.pos.persistence.entity.CashRegisterEntity;
 import com.asmdev.api.pos.persistence.entity.UserEntity;
 import com.asmdev.api.pos.persistence.repository.CashMovementsRepository;
 import com.asmdev.api.pos.persistence.repository.CashRegisterRepository;
+import com.asmdev.api.pos.persistence.specification.SpecificationCashRegister;
 import com.asmdev.api.pos.service.CashRegisterService;
 import com.asmdev.api.pos.service.UserService;
 import com.asmdev.api.pos.utils.status.CashMovementsStatus;
@@ -21,11 +23,16 @@ import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import com.asmdev.api.pos.utils.status.UserStatus;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -78,8 +85,19 @@ public class CashRegisterServiceImpl implements CashRegisterService {
     }
 
     @Override
-    public ApiResponseDto executeGetCashRegisterList(int page, int size, String cashRegisterId, String status, String startDate, String endDate) {
-        return null;
+    public ApiResponseDto executeGetCashRegisterList(int page, int size, String cashRegisterId, String status, String startDate, String endDate) throws NotFoundException {
+        Pageable pageable = PageRequest.of(page,size);
+        Specification<CashRegisterEntity> filter = SpecificationCashRegister.withFilter(cashRegisterId, status, startDate, endDate);
+        Page<CashRegisterEntity> cashRegisterList = this.cashRegisterRepository.findAll(filter,pageable);
+
+        if (cashRegisterList.isEmpty())
+            throw new NotFoundException("No hay cajas registradas en el sistema");
+
+        List<CashRegisterDto> cashRegisterDtos = cashRegisterList.getContent().stream().map(cashRegisterMapper::convertToDto).toList();
+        ListDataPaginationDto pagination = new ListDataPaginationDto();
+        pagination.setData(Collections.singletonList(cashRegisterDtos));
+        pagination.setTotalElements((int) cashRegisterList.getTotalElements());
+        return new ApiResponseDto(HttpStatus.OK.value(), "Listado de cajas", pagination);
     }
 
     @Override

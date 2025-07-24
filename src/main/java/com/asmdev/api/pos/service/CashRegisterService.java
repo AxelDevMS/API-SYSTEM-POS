@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 
 public interface CashRegisterService {
     ApiResponseDto executeCreateCashRegister(@Valid CashRegisterDto cashRegisterDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
-    ApiResponseDto executeGetCashRegisterList(int page, int size, String cashRegisterId, String status, String startDate, String endDate);
+    ApiResponseDto executeGetCashRegisterList(int page, int size, String cashRegisterId, String status, String startDate, String endDate) throws NotFoundException;
     ApiResponseDto executeGetCashRegisterListBySelect() throws NotFoundException;
     ApiResponseDto executeGetCashRegister(String cashRegisterId) throws NotFoundException;
     ApiResponseDto executeCloseCashRegister(String cashRegisterId, CashRegisterDto cashRegisterDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;
