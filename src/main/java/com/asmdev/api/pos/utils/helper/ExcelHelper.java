@@ -3,6 +3,7 @@ package com.asmdev.api.pos.utils.helper;
 import com.asmdev.api.pos.dto.CategoryDto;
 import com.asmdev.api.pos.dto.PermissionDto;
 import com.asmdev.api.pos.dto.ProductDto;
+import com.asmdev.api.pos.dto.SupplierDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.utils.status.ModuleSystem;
 import com.asmdev.api.pos.utils.status.NamePermissions;
@@ -92,6 +93,34 @@ public class ExcelHelper {
                 productList.add(productDto);
             }
             return productList;
+        }catch (Exception e){
+            throw new BadRequestException("Error al leer el archivo excel "+ e.getMessage());
+        }
+    }
+
+    public static List<SupplierDto> readDataSupplierExcel(InputStream inputStream) throws BadRequestException {
+        try(Workbook workbook = new XSSFWorkbook(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0);
+            List<SupplierDto> supplierList = new ArrayList<>();
+
+            for (int i = 1; i<=sheet.getLastRowNum(); i++){
+                Row row = sheet.getRow(i);
+
+                SupplierDto supplierDto = new SupplierDto();
+                supplierDto.setName(getCellValue(row.getCell(0)));
+                supplierDto.setContactPerson(getCellValue(row.getCell(1)));
+                supplierDto.setPhone(getCellValue(row.getCell(2)));
+                supplierDto.setEmail(getCellValue(row.getCell(3)));
+                supplierDto.setStreet(getCellValue(row.getCell(4)));
+                supplierDto.setExteriorNumber(getCellValue(row.getCell(5)));
+                supplierDto.setInteriorNumber(getCellValue(row.getCell(6)));
+                supplierDto.setNeighborhood(getCellValue(row.getCell(7)));
+                supplierDto.setMunicipality(getCellValue(row.getCell(8)));
+                supplierDto.setState(getCellValue(row.getCell(9)));
+
+                supplierList.add(supplierDto);
+            }
+            return supplierList;
         }catch (Exception e){
             throw new BadRequestException("Error al leer el archivo excel "+ e.getMessage());
         }
