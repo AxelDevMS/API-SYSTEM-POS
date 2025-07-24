@@ -23,6 +23,8 @@ public class CashRegisterEntity {
 
     private BigDecimal openingAmount;
 
+    private BigDecimal currentAmount;
+
     private BigDecimal closingAmount;
 
     private BigDecimal expectedAmount;
@@ -42,6 +44,14 @@ public class CashRegisterEntity {
     @UpdateTimestamp
     private Date updatedAt;
 
+
+    public BigDecimal getCurrentAmount() {
+        return currentAmount;
+    }
+
+    public void setCurrentAmount(BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
+    }
 
     public String getId() {
         return id;

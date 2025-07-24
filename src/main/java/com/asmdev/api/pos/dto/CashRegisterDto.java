@@ -16,11 +16,11 @@ public class CashRegisterDto implements Serializable {
 
     private String id;
 
-    private UserDto user;
-
     @NotNull(message = "El monto de apertura es obligatorio")
     @DecimalMin(value = "0.0", inclusive = true, message = "El monto de apertura debe ser mayor o igual a 0")
     private BigDecimal openingAmount;
+
+    private BigDecimal currentAmount;
 
     private BigDecimal closingAmount;
 
@@ -37,11 +37,21 @@ public class CashRegisterDto implements Serializable {
     @Size(max = 500, message = "Las notas deben tener como máximo 500 caracteres")
     private String notes;
 
+    private UserDto user;
+
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date updatedAt;
+
+    public BigDecimal getCurrentAmount() {
+        return currentAmount;
+    }
+
+    public void setCurrentAmount(BigDecimal currentAmount) {
+        this.currentAmount = currentAmount;
+    }
 
     public String getId() {
         return id;

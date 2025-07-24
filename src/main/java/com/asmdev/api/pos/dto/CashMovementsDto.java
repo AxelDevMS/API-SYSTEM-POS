@@ -1,25 +1,16 @@
-package com.asmdev.api.pos.persistence.entity;
+package com.asmdev.api.pos.dto;
 
 import com.asmdev.api.pos.utils.status.CashMovementsStatus;
 import com.asmdev.api.pos.utils.status.TypeCashMovement;
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Entity
-@Table(name = "cash_movement")
-public class CashMovementsEntity {
+public class CashMovementsDto implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    @ManyToOne
-    @JoinColumn(name = "cash_register_id")
-    private CashRegisterEntity cashRegister;
 
     private TypeCashMovement type;
 
@@ -27,17 +18,16 @@ public class CashMovementsEntity {
 
     private BigDecimal amount;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    @Enumerated(EnumType.STRING)
     private CashMovementsStatus status;
 
-    @CreationTimestamp
+    private CashRegisterDto cashRegister;
+
+    private UserDto user;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
-    @UpdateTimestamp
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date updatedAt;
 
     public String getId() {
@@ -48,11 +38,11 @@ public class CashMovementsEntity {
         this.id = id;
     }
 
-    public CashRegisterEntity getCashRegister() {
+    public CashRegisterDto getCashRegister() {
         return cashRegister;
     }
 
-    public void setCashRegister(CashRegisterEntity cashRegister) {
+    public void setCashRegister(CashRegisterDto cashRegister) {
         this.cashRegister = cashRegister;
     }
 
@@ -80,11 +70,11 @@ public class CashMovementsEntity {
         this.amount = amount;
     }
 
-    public UserEntity getUser() {
+    public UserDto getUser() {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(UserDto user) {
         this.user = user;
     }
 

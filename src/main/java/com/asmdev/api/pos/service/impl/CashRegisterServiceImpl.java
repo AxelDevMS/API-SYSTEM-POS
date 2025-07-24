@@ -13,6 +13,7 @@ import com.asmdev.api.pos.persistence.repository.CashRegisterRepository;
 import com.asmdev.api.pos.service.CashRegisterService;
 import com.asmdev.api.pos.service.UserService;
 import com.asmdev.api.pos.utils.status.CashRegisterStatus;
+import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import com.asmdev.api.pos.utils.status.UserStatus;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -51,12 +53,14 @@ public class CashRegisterServiceImpl implements CashRegisterService {
 
         boolean userHasOpenCash = this.cashRegisterRepository.existsByUserIdAndStatus(user.getId(),CashRegisterStatus.OPEN);
         if (userHasOpenCash)
-            throw new BadRequestException("El usaurio ya tiene un caja abierta");
+            throw new BadRequestException("El usuario ya tiene un caja abierta");
 
         CashRegisterEntity cashRegister = this.cashRegisterMapper.convertToEntity(cashRegisterDto);
         cashRegister.setUser(user);
         cashRegister.setStatus(CashRegisterStatus.OPEN);
         cashRegister.setOpenedAt(new Date());
+        cashRegister.setCurrentAmount(cashRegisterDto.getOpeningAmount());
+        cashRegister.setClosingAmount(new BigDecimal("0.0"));
         cashRegister.setExpectedAmount(cashRegisterDto.getOpeningAmount());
         cashRegister = this.cashRegisterRepository.save(cashRegister);
 
@@ -125,6 +129,24 @@ public class CashRegisterServiceImpl implements CashRegisterService {
         if (cashRegister == null)
             throw new NotFoundException("No existe que esta caja se haya aperturado en el sistema");
 
+        return cashRegister;
+    }
+
+    @Override
+    public CashRegisterEntity updateCurrentAmount(String cashRegisterId, TypeCashMovement movementType, BigDecimal amount) throws NotFoundException, BadRequestException {
+        CashRegisterEntity cashRegister = this.getCashById(cashRegisterId);
+        BigDecimal amountEdit;
+
+        if (!cashRegister.getStatus().equals(CashRegisterStatus.OPEN))
+            throw new BadRequestException("La caja no esta abierta para actualizar los montos");
+
+        if (TypeCashMovement.INCOME.equals(movementType)){
+            amountEdit = cashRegister.getCurrentAmount().add(amount);
+        }else{
+            amountEdit = cashRegister.getCurrentAmount().subtract(amount);
+        }
+        cashRegister.setCurrentAmount(amountEdit);
+        cashRegister = this.cashRegisterRepository.save(cashRegister);
         return cashRegister;
     }
 }
