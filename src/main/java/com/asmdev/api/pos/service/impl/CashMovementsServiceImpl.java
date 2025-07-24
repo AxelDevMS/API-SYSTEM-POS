@@ -82,5 +82,8 @@ public class CashMovementsServiceImpl implements CashMovementsService {
         return null;
     }
 
-
+    @Override
+    public Long countByCashRegisterIdAndStatus(String cashRegisterId, CashMovementsStatus status) {
+        return null;
+    }
 }

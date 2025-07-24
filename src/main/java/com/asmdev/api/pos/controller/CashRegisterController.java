@@ -66,7 +66,7 @@ public class CashRegisterController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
-    @PutMapping("/udpate/{cashRegisterId}")
+    @PutMapping("/update/{cashRegisterId}")
     public ResponseEntity<ApiResponseDto> executeUpdateCashRegister(
             @PathVariable String cashRegisterId,
             @Valid @RequestBody CashRegisterDto cashRegisterDto,

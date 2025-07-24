@@ -5,7 +5,9 @@ import com.asmdev.api.pos.dto.CashMovementsDto;
 import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.utils.status.CashMovementsStatus;
 import jakarta.validation.Valid;
+import org.apache.juli.logging.Log;
 import org.springframework.validation.BindingResult;
 
 public interface CashMovementsService {
@@ -14,4 +16,5 @@ public interface CashMovementsService {
     ApiResponseDto executeGetCashMovement(String cashRegisterId);
     ApiResponseDto executeUpdateMovement(String cashRegisterId, @Valid CashMovementsDto cashMovementsDto, BindingResult bindingResult);
     ApiResponseDto executeDisabledMovement(String cashRegisterId, @Valid DisabledRegisterDto disabledRegisterDto, BindingResult bindingResult);
+    Long countByCashRegisterIdAndStatus(String cashRegisterId, CashMovementsStatus status);
 }

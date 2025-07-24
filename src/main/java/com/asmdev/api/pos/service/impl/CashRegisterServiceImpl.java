@@ -9,9 +9,12 @@ import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.mapper.CashRegisterMapper;
 import com.asmdev.api.pos.persistence.entity.CashRegisterEntity;
 import com.asmdev.api.pos.persistence.entity.UserEntity;
+import com.asmdev.api.pos.persistence.repository.CashMovementsRepository;
 import com.asmdev.api.pos.persistence.repository.CashRegisterRepository;
+import com.asmdev.api.pos.service.CashMovementsService;
 import com.asmdev.api.pos.service.CashRegisterService;
 import com.asmdev.api.pos.service.UserService;
+import com.asmdev.api.pos.utils.status.CashMovementsStatus;
 import com.asmdev.api.pos.utils.status.CashRegisterStatus;
 import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import com.asmdev.api.pos.utils.status.UserStatus;
@@ -39,6 +42,9 @@ public class CashRegisterServiceImpl implements CashRegisterService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CashMovementsRepository cashMovementsRepository;
 
 
     @Override
@@ -110,13 +116,17 @@ public class CashRegisterServiceImpl implements CashRegisterService {
             throw new BadRequestException("Este usuario no puede apertura una caja ya que su cuenta no esta activa");
 
         CashRegisterEntity cashRegister = this.getCashById(cashRegisterId);
+        if (!cashRegister.getStatus().equals(CashRegisterStatus.OPEN))
+            throw new BadRequestException("No se puede modifcar la información de la caja ya que no se encuentra abierta");
+
+        long countMovements = this.cashMovementsRepository.countByCashRegisterIdAndStatus(cashRegisterId, CashMovementsStatus.ACTIVE);
+        if (countMovements > 0)
+            throw new BadRequestException("No se puede modificar el monto inicial si ya hay movimientos registrados");
+
         cashRegister.setUser(user);
         cashRegister.setOpeningAmount(cashRegisterDto.getOpeningAmount());
-        cashRegister.setClosingAmount(cashRegisterDto.getClosingAmount());
-        cashRegister.setExpectedAmount(cashRegisterDto.getExpectedAmount());
-        cashRegister.setOpenedAt(cashRegisterDto.getOpenedAt());
-        cashRegister.setClosedAt(cashRegisterDto.getClosedAt());
-        cashRegister.setStatus(cashRegisterDto.getStatus());
+        cashRegister.setExpectedAmount(cashRegisterDto.getOpeningAmount());
+        cashRegister.setCurrentAmount(cashRegisterDto.getOpeningAmount());
         cashRegister.setNotes(cashRegisterDto.getNotes());
 
         cashRegister = this.cashRegisterRepository.save(cashRegister);
