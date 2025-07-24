@@ -11,10 +11,10 @@ import org.apache.juli.logging.Log;
 import org.springframework.validation.BindingResult;
 
 public interface CashMovementsService {
-    ApiResponseDto executeCreateCashMovement(@Valid CashMovementsDto cashMovementsDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;
-    ApiResponseDto executeGetCashMovementList(int page, int size, String cashRegisterId, String status, String date);
-    ApiResponseDto executeGetCashMovement(String cashRegisterId);
-    ApiResponseDto executeUpdateMovement(String cashRegisterId, @Valid CashMovementsDto cashMovementsDto, BindingResult bindingResult);
-    ApiResponseDto executeDisabledMovement(String cashRegisterId, @Valid DisabledRegisterDto disabledRegisterDto, BindingResult bindingResult);
+    ApiResponseDto executeCreateCashMovement(CashMovementsDto cashMovementsDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;
+    ApiResponseDto executeGetCashMovementList(int page, int size, String userId, String cashRegisterId, String type, String status, String startDate, String endDate) throws NotFoundException;
+    ApiResponseDto executeGetCashMovement(String cashRegisterId) throws NotFoundException;
+    ApiResponseDto executeUpdateMovement(String cashRegisterId,CashMovementsDto cashMovementsDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
+    ApiResponseDto executeDisabledMovement(String cashRegisterId,DisabledRegisterDto disabledRegisterDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
     Long countByCashRegisterIdAndStatus(String cashRegisterId, CashMovementsStatus status);
 }

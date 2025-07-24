@@ -35,16 +35,19 @@ public class CashMovementsController {
     public ResponseEntity<ApiResponseDto> executeGetCashMovementList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String userId,
             @RequestParam(required = false) String cashRegisterId,
+            @RequestParam(required = false) String type,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String date
-    ){
-        ApiResponseDto response = this.cashMovementsService.executeGetCashMovementList(page,size,cashRegisterId,status,date);
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
+    ) throws NotFoundException {
+        ApiResponseDto response = this.cashMovementsService.executeGetCashMovementList(page,size,userId,cashRegisterId,type,status,startDate,endDate);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     @GetMapping("/get/{cashRegisterId}")
-    public ResponseEntity<ApiResponseDto> executeGetCashMovement(@PathVariable String cashRegisterId){
+    public ResponseEntity<ApiResponseDto> executeGetCashMovement(@PathVariable String cashRegisterId) throws NotFoundException {
         ApiResponseDto response = this.cashMovementsService.executeGetCashMovement(cashRegisterId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -54,7 +57,7 @@ public class CashMovementsController {
             @PathVariable String cashRegisterId,
             @Valid @RequestBody CashMovementsDto cashMovementsDto,
             BindingResult bindingResult
-    ){
+    ) throws BadRequestException, NotFoundException {
         ApiResponseDto response = this.cashMovementsService.executeUpdateMovement(cashRegisterId,cashMovementsDto,bindingResult);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -64,7 +67,7 @@ public class CashMovementsController {
             @PathVariable String cashRegisterId,
             @Valid @RequestBody DisabledRegisterDto disabledRegisterDto,
             BindingResult bindingResult
-    ){
+    ) throws BadRequestException, NotFoundException {
         ApiResponseDto response = this.cashMovementsService.executeDisabledMovement(cashRegisterId,disabledRegisterDto,bindingResult);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
