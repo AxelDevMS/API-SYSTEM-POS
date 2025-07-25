@@ -259,4 +259,12 @@ public class ProductServiceImpl implements ProductService {
 
         return product;
     }
+
+    @Override
+    public ProductEntity updateStock(String productId, int stock) throws NotFoundException {
+        ProductEntity product = this.getProductById(productId);
+        product.setStock(stock);
+        product = this.productRepository.save(product);
+        return product;
+    }
 }

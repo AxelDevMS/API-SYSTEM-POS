@@ -21,4 +21,5 @@ public interface ProductService {
     byte[] executeExportProducts() throws BadRequestException;
     ApiResponseDto executeDisabledProduct(String productId, DisabledRegisterDto disabledRegisterDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;
     ProductEntity getProductById(String productId) throws NotFoundException;
+    ProductEntity updateStock(String productId, int stock) throws NotFoundException;
 }

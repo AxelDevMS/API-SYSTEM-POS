@@ -2,11 +2,13 @@ package com.asmdev.api.pos.dto;
 
 import com.asmdev.api.pos.utils.status.ProductStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductDto {
 
     private String id;

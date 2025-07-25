@@ -1,36 +1,27 @@
-package com.asmdev.api.pos.persistence.entity;
+package com.asmdev.api.pos.dto;
 
 
 import com.asmdev.api.pos.utils.method.InventoryMovementType;
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 
-@Entity
-@Table(name = "inventory_movement")
-public class InventoryMovementsEntity {
+public class InventoryMovementDto implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private ProductEntity product;
-
-    @Enumerated(EnumType.STRING)
-    private InventoryMovementType type;
 
     private int quantity;
 
+    private InventoryMovementType type;
+
     private String description;
 
-    @CreationTimestamp
+    private UserDto user;
+
+    private ProductDto product;
+
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
     public String getId() {
@@ -41,19 +32,19 @@ public class InventoryMovementsEntity {
         this.id = id;
     }
 
-    public UserEntity getUser() {
+    public UserDto getUser() {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(UserDto user) {
         this.user = user;
     }
 
-    public ProductEntity getProduct() {
+    public ProductDto getProduct() {
         return product;
     }
 
-    public void setProduct(ProductEntity product) {
+    public void setProduct(ProductDto product) {
         this.product = product;
     }
 
@@ -63,6 +54,14 @@ public class InventoryMovementsEntity {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public InventoryMovementType getType() {
+        return type;
+    }
+
+    public void setType(InventoryMovementType type) {
+        this.type = type;
     }
 
     public String getDescription() {
@@ -79,13 +78,5 @@ public class InventoryMovementsEntity {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public InventoryMovementType getType() {
-        return type;
-    }
-
-    public void setType(InventoryMovementType type) {
-        this.type = type;
     }
 }
