@@ -83,7 +83,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchaseEntity.setUser(user);
         purchaseEntity.setSupplier(supplier);
         purchaseEntity.setTotal(total);
-        purchaseEntity.setStatus(PurchaseStatus.DRAFT);
+        purchaseEntity.setStatus(PurchaseStatus.COMPLETED);
         purchaseEntity.setCreatedAt(new Date());
         purchaseEntity.setItems(new ArrayList<>()); // Inicializa la lista para evitar null
 

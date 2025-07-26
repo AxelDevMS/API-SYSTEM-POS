@@ -17,6 +17,10 @@ public class CashMovementsDto implements Serializable {
 
     private TypeCashMovement type;
 
+    private String referenceType;
+
+    private String referenceId;
+
     private String concept;
 
     private BigDecimal amount;
@@ -103,5 +107,21 @@ public class CashMovementsDto implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getReferenceType() {
+        return referenceType;
+    }
+
+    public void setReferenceType(String referenceType) {
+        this.referenceType = referenceType;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
     }
 }
