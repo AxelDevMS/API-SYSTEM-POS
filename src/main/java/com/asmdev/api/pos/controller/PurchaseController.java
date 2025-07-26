@@ -34,4 +34,36 @@ public class PurchaseController {
         ApiResponseDto response = this.purchaseService.executeGetPurchase(purchaseId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+    @GetMapping("/get-alls")
+    public ResponseEntity<ApiResponseDto> executeGetPurchaseList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String supplierId,
+            @RequestParam(required = false) String purchaseId,
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate
+    ){
+        ApiResponseDto response = this.purchaseService.executeGetPurchaseList(page,size,supplierId,purchaseId,userId,status,startDate,endDate);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @PatchMapping("/cancelled/{purchaseId}")
+    public ResponseEntity<ApiResponseDto> executeCancelledPurchase(
+            @PathVariable String purchaseId,
+            @Valid @RequestBody PurchaseDto purchaseDto,
+            BindingResult bindingResult
+    ){
+        ApiResponseDto response = this.purchaseService.executeCancelledPurchase(purchaseId, purchaseDto, bindingResult);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<ApiResponseDto> executeExportPurchase(){
+        ApiResponseDto response = this.purchaseService.executeExportPurchase();
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
 }

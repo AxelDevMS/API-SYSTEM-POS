@@ -154,9 +154,18 @@ public class PurchaseServiceImpl implements PurchaseService {
         return null;
     }
 
+    @Override
+    public ApiResponseDto executeGetPurchaseList(int page, int size, String supplierId, String purchaseId, String userId, String status, String startDate, String endDate) {
+        return null;
+    }
 
+    @Override
+    public ApiResponseDto executeCancelledPurchase(String purchaseId, PurchaseDto purchaseDto, BindingResult bindingResult) {
+        return null;
+    }
 
-
-
-
+    @Override
+    public ApiResponseDto executeExportPurchase() {
+        return null;
+    }
 }
