@@ -30,7 +30,7 @@ public class PurchaseController {
     }
 
     @GetMapping("/get/{purchaseId}")
-    public ResponseEntity<ApiResponseDto> executeGetPurchase(@PathVariable String purchaseId){
+    public ResponseEntity<ApiResponseDto> executeGetPurchase(@PathVariable String purchaseId) throws NotFoundException {
         ApiResponseDto response = this.purchaseService.executeGetPurchase(purchaseId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -45,7 +45,7 @@ public class PurchaseController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate
-    ){
+    ) throws NotFoundException {
         ApiResponseDto response = this.purchaseService.executeGetPurchaseList(page,size,supplierId,purchaseId,userId,status,startDate,endDate);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

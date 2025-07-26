@@ -6,6 +6,7 @@ import com.asmdev.api.pos.dto.SupplierDto;
 import com.asmdev.api.pos.dto.UserDto;
 import com.asmdev.api.pos.utils.method.PaymentMethod;
 import com.asmdev.api.pos.utils.status.PurchaseStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
@@ -32,8 +33,10 @@ public class PurchaseDto implements Serializable {
 
     private List<ItemPurchaseDto> items;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date updatedAt;
 
     public String getId() {

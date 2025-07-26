@@ -9,6 +9,7 @@ import com.asmdev.api.pos.mapper.PurchaseMapper;
 import com.asmdev.api.pos.persistence.entity.*;
 import com.asmdev.api.pos.persistence.repository.ItemPurchaseRepository;
 import com.asmdev.api.pos.persistence.repository.PurchaseRepository;
+import com.asmdev.api.pos.persistence.specification.SpecificationPurchase;
 import com.asmdev.api.pos.service.*;
 import com.asmdev.api.pos.utils.method.InventoryMovementType;
 import com.asmdev.api.pos.utils.method.PaymentMethod;
@@ -16,6 +17,10 @@ import com.asmdev.api.pos.utils.status.PurchaseStatus;
 import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +28,7 @@ import org.springframework.validation.BindingResult;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -150,13 +156,25 @@ public class PurchaseServiceImpl implements PurchaseService {
 
 
     @Override
-    public ApiResponseDto executeGetPurchase(String purchaseId) {
-        return null;
+    public ApiResponseDto executeGetPurchase(String purchaseId) throws NotFoundException {
+        PurchaseEntity purchase = this.getPurchaseById(purchaseId);
+        return new ApiResponseDto(HttpStatus.OK.value(), "Información de la compra ", this.purchaseMapper.convertToDto(purchase));
     }
 
     @Override
-    public ApiResponseDto executeGetPurchaseList(int page, int size, String supplierId, String purchaseId, String userId, String status, String startDate, String endDate) {
-        return null;
+    public ApiResponseDto executeGetPurchaseList(int page, int size, String supplierId, String purchaseId, String userId, String status, String startDate, String endDate) throws NotFoundException {
+        Pageable pageable = PageRequest.of(page,size);
+        Specification<PurchaseEntity> filter = SpecificationPurchase.withFilter(supplierId, purchaseId, userId, status, startDate, endDate);
+        Page<PurchaseEntity> purchaseListBD = this.purchaseRepository.findAll(filter,pageable);
+
+        if (purchaseListBD.isEmpty())
+            throw new NotFoundException("No hay compras para alimetar el inventario");
+
+        List<PurchaseDto> purchaseDtos = purchaseListBD.getContent().stream().map(purchaseMapper::convertToDto).toList();
+        ListDataPaginationDto paginationDto = new ListDataPaginationDto();
+        paginationDto.setData(Collections.singletonList(purchaseDtos));
+        paginationDto.setTotalElements((int) purchaseListBD.getTotalElements());
+        return new ApiResponseDto(HttpStatus.OK.value(),"Listado de compras", paginationDto);
     }
 
     @Override
@@ -167,5 +185,14 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public ApiResponseDto executeExportPurchase() {
         return null;
+    }
+
+    @Override
+    public PurchaseEntity getPurchaseById(String purchaseId) throws NotFoundException {
+        PurchaseEntity purchase = this.purchaseRepository.findById(purchaseId).orElse(null);
+        if (purchase == null)
+            throw new NotFoundException("No existe esta compra de inventario en el sistema");
+
+        return purchase;
     }
 }

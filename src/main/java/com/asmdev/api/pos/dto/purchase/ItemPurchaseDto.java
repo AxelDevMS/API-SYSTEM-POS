@@ -1,6 +1,7 @@
 package com.asmdev.api.pos.dto.purchase;
 
 import com.asmdev.api.pos.dto.ProductDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
@@ -22,8 +23,10 @@ public class ItemPurchaseDto implements Serializable {
 
     private BigDecimal total;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date updatedAt;
 
     public String getId() {
