@@ -3,10 +3,12 @@ package com.asmdev.api.pos.dto;
 
 import com.asmdev.api.pos.utils.method.InventoryMovementType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class InventoryMovementDto implements Serializable {
 
     private String id;

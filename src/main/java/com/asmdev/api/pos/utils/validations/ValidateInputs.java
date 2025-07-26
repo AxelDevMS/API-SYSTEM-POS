@@ -13,7 +13,7 @@ public class ValidateInputs {
 
     public List<ValidateInputDto> validateInputs(BindingResult bindingResult){
         List<ValidateInputDto> inputs = new ArrayList<>();
-        if (bindingResult.hasErrors()){
+        if (bindingResult != null && bindingResult.hasErrors()){
             bindingResult.getFieldErrors().forEach(inputError ->{
                 ValidateInputDto input = new ValidateInputDto();
                 input.setInput(inputError.getField());

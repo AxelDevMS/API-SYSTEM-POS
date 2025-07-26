@@ -1,28 +1,20 @@
-package com.asmdev.api.pos.persistence.entity;
+package com.asmdev.api.pos.dto.purchase;
 
+import com.asmdev.api.pos.dto.ProductDto;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Entity
-@Table(name = "purchase_item")
-public class PurchaseItemsEntity {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ItemPurchaseDto implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @ManyToOne
-    @JoinColumn(name = "purchase_id")
-    private PurchaseEntity purchase;
+    private PurchaseDto purchase;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private ProductEntity product;
+    private ProductDto product;
 
     private int quantity;
 
@@ -30,10 +22,8 @@ public class PurchaseItemsEntity {
 
     private BigDecimal total;
 
-    @CreationTimestamp
     private Date createdAt;
 
-    @UpdateTimestamp
     private Date updatedAt;
 
     public String getId() {
@@ -44,19 +34,19 @@ public class PurchaseItemsEntity {
         this.id = id;
     }
 
-    public PurchaseEntity getPurchase() {
+    public PurchaseDto getPurchase() {
         return purchase;
     }
 
-    public void setPurchase(PurchaseEntity purchase) {
+    public void setPurchase(PurchaseDto purchase) {
         this.purchase = purchase;
     }
 
-    public ProductEntity getProduct() {
+    public ProductDto getProduct() {
         return product;
     }
 
-    public void setProduct(ProductEntity product) {
+    public void setProduct(ProductDto product) {
         this.product = product;
     }
 

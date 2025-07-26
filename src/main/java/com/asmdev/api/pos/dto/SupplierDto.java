@@ -3,12 +3,14 @@ package com.asmdev.api.pos.dto;
 import com.asmdev.api.pos.persistence.entity.PurchaseEntity;
 import com.asmdev.api.pos.utils.status.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SupplierDto implements Serializable {
 
     private String id;

@@ -3,6 +3,7 @@ package com.asmdev.api.pos.dto;
 import com.asmdev.api.pos.persistence.entity.ProductEntity;
 import com.asmdev.api.pos.utils.status.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryDto implements Serializable {
 
     private String id;
