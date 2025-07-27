@@ -8,8 +8,6 @@ import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.persistence.entity.RoleEntity;
 import org.springframework.validation.BindingResult;
 
-import java.util.Optional;
-
 public interface RoleService {
 
     ApiResponseDto executeCreateRole(RoleDto roleDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;

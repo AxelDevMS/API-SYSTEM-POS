@@ -2,12 +2,14 @@ package com.asmdev.api.pos.dto.Sale;
 
 import com.asmdev.api.pos.dto.ProductDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SaleItemDto implements Serializable {
 
     private String id;

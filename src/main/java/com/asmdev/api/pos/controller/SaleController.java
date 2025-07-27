@@ -2,6 +2,8 @@ package com.asmdev.api.pos.controller;
 
 import com.asmdev.api.pos.dto.ApiResponseDto;
 import com.asmdev.api.pos.dto.Sale.SaleDto;
+import com.asmdev.api.pos.exception.BadRequestException;
+import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.service.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ public class SaleController {
     public ResponseEntity<ApiResponseDto> executeCreateSale(
             @Valid @RequestBody SaleDto saleDto,
             BindingResult bindingResult
-    ){
+    ) throws BadRequestException, NotFoundException {
         ApiResponseDto response = this.saleService.executeCreateSale(saleDto,bindingResult);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }

@@ -6,6 +6,7 @@ import com.asmdev.api.pos.dto.UserDto;
 import com.asmdev.api.pos.utils.method.PaymentMethod;
 import com.asmdev.api.pos.utils.status.PurchaseStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SaleDto implements Serializable {
 
     private String id;

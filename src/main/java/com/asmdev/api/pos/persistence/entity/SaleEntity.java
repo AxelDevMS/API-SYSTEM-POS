@@ -20,7 +20,7 @@ public class SaleEntity {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = true)
     private CustomerEntity customer;
 
     @ManyToOne
