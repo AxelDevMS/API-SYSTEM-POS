@@ -16,6 +16,8 @@ import com.asmdev.api.pos.persistence.specification.SpecificationSale;
 import com.asmdev.api.pos.service.*;
 import com.asmdev.api.pos.utils.method.InventoryMovementType;
 import com.asmdev.api.pos.utils.method.PaymentMethod;
+import com.asmdev.api.pos.utils.status.CashMovementsStatus;
+import com.asmdev.api.pos.utils.status.NamePermissions;
 import com.asmdev.api.pos.utils.status.PurchaseStatus;
 import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
@@ -107,6 +109,50 @@ public class SaleServiceImpl implements SaleService {
         return new ApiResponseDto(HttpStatus.CREATED.value(),"Se registro la venta exitosamente", this.saleMapper.convertToDto(saleEntity));
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResponseDto executeCancelledSale(String saleId, SaleDto saleDto, BindingResult bindingResult) throws NotFoundException, BadRequestException {
+
+        SaleEntity sale = this.getSaleById(saleId);
+        if (PurchaseStatus.CANCELED.equals(sale.getStatus()))
+            throw new BadRequestException("Esta venta ya se encuentra cancelada");
+
+        CustomerEntity customer = this.customerRepository.findById(saleDto.getCustomer().getId()).orElse(null);
+        String customerName = "" ;
+        if (customer == null) {
+            customerName = null;
+        }else{
+            customerName = customer.getName();
+        }
+
+        UserEntity user = this.userService.getUserById(saleDto.getUser().getId());
+        boolean isPermissionCanceled = user.getRole().getPermissions().stream().anyMatch(permission -> permission.getName().equals(NamePermissions.SALE_CANCEL));
+        if (!isPermissionCanceled)
+            throw new BadRequestException("No tienes permisos para cancelar esta venta");
+
+        sale.setStatus(PurchaseStatus.CANCELED);
+        sale.setCancelledUser(user.getId());
+        sale.setCancelledAt(new Date());
+        sale = this.saleRepository.save(sale);
+
+        List<SaleItemDto> saleItemDtos = sale.getItems().stream().map(saleMapper::convertToDtoSaleItemList).toList();
+        this.canceledCashMovementsSale(saleDto, saleId);
+        this.itemSales(sale, saleItemDtos, user.getId());
+
+        return new ApiResponseDto(HttpStatus.OK.value(), "Se cancelo la compra exitosamente", this.saleMapper.convertToDto(sale));
+    }
+
+    private void canceledCashMovementsSale(SaleDto saleDto, String saleId) throws NotFoundException, BadRequestException {
+        if (PaymentMethod.CASH.equals(saleDto.getPaymentMethod())) {
+            CashMovementsEntity cashMovement = this.cashMovementsService.findByReferenceId(saleId);
+            CashMovementsDto cashMovementsDto = new CashMovementsDto();
+            cashMovementsDto.setStatus(CashMovementsStatus.CANCELED);
+            cashMovementsDto.setCancelledUser(saleDto.getUser().getId());
+            cashMovementsDto.setCancelledAt(new Date());
+            this.cashMovementsService.executeCanceledMovement(cashMovement.getId(),  cashMovementsDto, null);
+        }
+    }
+
     private List<SaleItemEntity> itemSales(SaleEntity sale, List<SaleItemDto> productList, String userId) throws NotFoundException, BadRequestException {
         List<SaleItemEntity> itemList = new ArrayList<>();
 
@@ -174,11 +220,6 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public ApiResponseDto executeCancelledSale(String saleId, SaleDto saleDto, BindingResult bindingResult) {
-        return null;
-    }
-
-    @Override
     public ApiResponseDto executeGetSaleList(int page, int size, String customerId, String saleId, String userId, String status, String startDate, String endDate) throws NotFoundException {
         Pageable pageable = PageRequest.of(page,size);
         Specification<SaleEntity> filter = SpecificationSale.withFilter(customerId, saleId, userId, status, startDate, endDate);
@@ -208,4 +249,7 @@ public class SaleServiceImpl implements SaleService {
 
         return sale;
     }
+
+
+
 }

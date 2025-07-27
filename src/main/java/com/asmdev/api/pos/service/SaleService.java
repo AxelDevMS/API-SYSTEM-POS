@@ -10,7 +10,7 @@ import org.springframework.validation.BindingResult;
 public interface SaleService {
     ApiResponseDto executeCreateSale(SaleDto saleDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
     ApiResponseDto executeExportSale();
-    ApiResponseDto executeCancelledSale(String saleId,SaleDto saleDto, BindingResult bindingResult);
+    ApiResponseDto executeCancelledSale(String saleId,SaleDto saleDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;
     ApiResponseDto executeGetSaleList(int page, int size, String customerId, String saleId, String userId, String status, String startDate, String endDate) throws NotFoundException;
     ApiResponseDto executeGetSale(String saleId) throws NotFoundException;
     SaleEntity getSaleById(String saleId) throws NotFoundException;
