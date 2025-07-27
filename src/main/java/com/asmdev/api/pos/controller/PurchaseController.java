@@ -55,7 +55,7 @@ public class PurchaseController {
             @PathVariable String purchaseId,
             @Valid @RequestBody PurchaseDto purchaseDto,
             BindingResult bindingResult
-    ){
+    ) throws NotFoundException, BadRequestException {
         ApiResponseDto response = this.purchaseService.executeCancelledPurchase(purchaseId, purchaseDto, bindingResult);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

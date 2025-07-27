@@ -222,4 +222,23 @@ public class CashRegisterServiceImpl implements CashRegisterService {
         cashRegister = this.cashRegisterRepository.save(cashRegister);
         return cashRegister;
     }
+
+    @Override
+    public boolean revertCashMovementEffect(String cashRegisterId,CashMovementsEntity cashMovement) throws NotFoundException, BadRequestException {
+        CashRegisterEntity cashRegister = this.getCashById(cashRegisterId);
+        BigDecimal newAmount;
+
+        if (!CashMovementsStatus.CANCELED.equals(cashMovement.getStatus()))
+            throw new BadRequestException("No puedes actualizar los montos la caja porque el movimiento se encuentra ACTIVO");
+
+        newAmount = switch (cashMovement.getType()) {
+            case EXPENSE -> cashRegister.getCurrentAmount().add(cashMovement.getAmount());
+            case INCOME -> cashRegister.getCurrentAmount().subtract(cashMovement.getAmount());
+        };
+
+        cashRegister.setCurrentAmount(newAmount);
+        cashRegisterRepository.save(cashRegister);
+
+        return true;
+    }
 }

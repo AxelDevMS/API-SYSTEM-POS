@@ -4,6 +4,7 @@ import com.asmdev.api.pos.dto.ApiResponseDto;
 import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.persistence.entity.CashMovementsEntity;
 import com.asmdev.api.pos.persistence.entity.CashRegisterEntity;
 import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import jakarta.validation.Valid;
@@ -20,4 +21,6 @@ public interface CashRegisterService {
     ApiResponseDto executeUpdateCashRegister(String cashRegisterId, CashRegisterDto cashRegisterDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
     CashRegisterEntity getCashById(String cashRegisterId) throws NotFoundException;
     CashRegisterEntity updateCurrentAmount(String cashRegisterId, TypeCashMovement movementType, BigDecimal amount) throws NotFoundException, BadRequestException;
+
+    boolean revertCashMovementEffect(String cashRegisterId,CashMovementsEntity cashMovement) throws NotFoundException, BadRequestException;
 }

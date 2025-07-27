@@ -23,7 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
+import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -111,14 +113,20 @@ public class CashMovementsServiceImpl implements CashMovementsService {
     }
 
     @Override
-    public ApiResponseDto executeDisabledMovement(String cashRegisterId, DisabledRegisterDto disabledRegisterDto, BindingResult bindingResult) throws BadRequestException, NotFoundException {
+    public ApiResponseDto executeCanceledMovement(String cashMovementId,CashMovementsDto cashMovementsDto, BindingResult bindingResult) throws BadRequestException, NotFoundException {
         List<ValidateInputDto> validateInputList = this.validateInputs.validateInputs(bindingResult);
         if (!validateInputList.isEmpty())
             throw new BadRequestException("Campos invalidos", validateInputList);
 
-        CashMovementsEntity movement = this.getMovementById(cashRegisterId);
-        movement.setStatus(CashMovementsStatus.valueOf(disabledRegisterDto.getStatus()));
+        CashMovementsEntity movement = this.getMovementById(cashMovementId);
+        movement.setStatus(cashMovementsDto.getStatus());
+        movement.setCancelledUser(cashMovementsDto.getCancelledUser());
+        movement.setCancelledAt(new Date());
         movement = this.cashMovementsRepository.save(movement);
+
+        boolean isReverCurrentAmount = this.cashRegisterService.revertCashMovementEffect(movement.getCashRegister().getId(),movement);
+        if (!isReverCurrentAmount)
+            throw new BadRequestException("Hubo un problema al actualizar la información de la caja");
 
         return new ApiResponseDto(HttpStatus.OK.value(),"El movimiento cambio a estado eliminado", this.cashMovementsMapper.convertToDto(movement));
     }
@@ -135,4 +143,13 @@ public class CashMovementsServiceImpl implements CashMovementsService {
     public Long countByCashRegisterIdAndStatus(String cashRegisterId, CashMovementsStatus status) {
         return null;
     }
+
+    @Override
+    public CashMovementsEntity findByReferenceId(String referenceId) throws NotFoundException {
+        CashMovementsEntity cashMovement = this.cashMovementsRepository.findByReferenceId(referenceId).orElse(null);
+        if (referenceId == null)
+            throw new NotFoundException("No existe este movimiento con este id de referencia");
+        return cashMovement;
+    }
+
 }

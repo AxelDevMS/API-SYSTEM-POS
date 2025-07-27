@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface CashMovementsRepository extends JpaRepository<CashMovementsEntity,String>, JpaSpecificationExecutor<CashMovementsEntity> {
 
@@ -28,6 +29,8 @@ public interface CashMovementsRepository extends JpaRepository<CashMovementsEnti
     );
 
     List<CashMovementsEntity> findAllByCashRegisterIdAndStatus(String id, CashMovementsStatus status);
+
+    Optional<CashMovementsEntity> findByReferenceId(String referenceId);
 
 
 

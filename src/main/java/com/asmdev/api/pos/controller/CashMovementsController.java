@@ -63,12 +63,12 @@ public class CashMovementsController {
     }
 
     @PatchMapping("/disabled/{cashRegisterId}")
-    public ResponseEntity<ApiResponseDto> executeUpdateMovement(
+    public ResponseEntity<ApiResponseDto> executeCanceledMovement(
             @PathVariable String cashRegisterId,
-            @Valid @RequestBody DisabledRegisterDto disabledRegisterDto,
+            @Valid @RequestBody CashMovementsDto cashMovementsDto,
             BindingResult bindingResult
     ) throws BadRequestException, NotFoundException {
-        ApiResponseDto response = this.cashMovementsService.executeDisabledMovement(cashRegisterId,disabledRegisterDto,bindingResult);
+        ApiResponseDto response = this.cashMovementsService.executeCanceledMovement(cashRegisterId,cashMovementsDto,bindingResult);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 

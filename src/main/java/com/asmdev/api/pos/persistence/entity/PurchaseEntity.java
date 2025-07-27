@@ -35,6 +35,10 @@ public class PurchaseEntity {
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status;
 
+    private String cancelledUser;
+
+    private Date cancelledAt;
+
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
     private List<PurchaseItemsEntity> items;
 
@@ -115,6 +119,22 @@ public class PurchaseEntity {
 
     public void setPaymentMethod(PaymentMethod paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getCancelledUser() {
+        return cancelledUser;
+    }
+
+    public void setCancelledUser(String cancelledUser) {
+        this.cancelledUser = cancelledUser;
+    }
+
+    public Date getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public void setCancelledAt(Date cancelledAt) {
+        this.cancelledAt = cancelledAt;
     }
 }
 

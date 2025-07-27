@@ -31,6 +31,10 @@ public class PurchaseDto implements Serializable {
 
     private BigDecimal total; // de entrada no se requiere
 
+    private String cancelledUser;
+
+    private Date cancelledAt;
+
     private List<ItemPurchaseDto> items;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
@@ -117,5 +121,21 @@ public class PurchaseDto implements Serializable {
 
     public void setCash(CashRegisterDto cash) {
         this.cash = cash;
+    }
+
+    public String getCancelledUser() {
+        return cancelledUser;
+    }
+
+    public void setCancelledUser(String cancelledUser) {
+        this.cancelledUser = cancelledUser;
+    }
+
+    public Date getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public void setCancelledAt(Date cancelledAt) {
+        this.cancelledAt = cancelledAt;
     }
 }

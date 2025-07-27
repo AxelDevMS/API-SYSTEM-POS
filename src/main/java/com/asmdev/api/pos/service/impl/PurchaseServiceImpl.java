@@ -13,6 +13,8 @@ import com.asmdev.api.pos.persistence.specification.SpecificationPurchase;
 import com.asmdev.api.pos.service.*;
 import com.asmdev.api.pos.utils.method.InventoryMovementType;
 import com.asmdev.api.pos.utils.method.PaymentMethod;
+import com.asmdev.api.pos.utils.status.CashMovementsStatus;
+import com.asmdev.api.pos.utils.status.NamePermissions;
 import com.asmdev.api.pos.utils.status.PurchaseStatus;
 import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
@@ -90,7 +92,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchaseEntity = this.purchaseRepository.save(purchaseEntity); // Persistir primero
 
         // ✅ SEGUNDA MODIFICACIÓN: pasar el PurchaseEntity persistido (con ID) a itemPurchaseSave
-        List<PurchaseItemsEntity> items = this.itemPurchaseSave(purchaseEntity, purchaseDto.getItems(), user.getId(), supplier.getName());
+        List<PurchaseItemsEntity> items = this.itemPurchase(purchaseEntity, purchaseDto.getItems(), user.getId(), supplier.getName());
         purchaseEntity.setItems(items); // Asociar los items
 
         purchaseEntity = this.purchaseRepository.save(purchaseEntity); // Volver a guardar con items
@@ -98,11 +100,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchaseDto.setId(purchaseEntity.getId());
         this.createCashMovements(purchaseDto, supplier.getName(), total);
 
-        return new ApiResponseDto(
-                HttpStatus.CREATED.value(),
-                "Se registró esta compra al inventario",
-                this.purchaseMapper.convertToDto(purchaseEntity)
-        );
+        return new ApiResponseDto(HttpStatus.CREATED.value(), "Se registró esta compra al inventario", this.purchaseMapper.convertToDto(purchaseEntity));
     }
 
 
@@ -121,7 +119,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         }
     }
 
-    private List<PurchaseItemsEntity> itemPurchaseSave(PurchaseEntity purchase, List<ItemPurchaseDto> itemsDto, String userId, String supplierName) throws NotFoundException, BadRequestException {
+    private List<PurchaseItemsEntity> itemPurchase(PurchaseEntity purchase, List<ItemPurchaseDto> itemsDto, String userId, String supplierName) throws NotFoundException, BadRequestException {
         List<PurchaseItemsEntity> itemList = new ArrayList<>();
 
         for (ItemPurchaseDto itemDto : itemsDto) {
@@ -134,7 +132,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             item.setUnitPrice(itemDto.getUnitPrice());
             item.setTotal(itemDto.getUnitPrice().multiply(BigDecimal.valueOf(itemDto.getQuantity())));
 
-            this.createInventoryMovement(item, userId, product.getId(), supplierName); // mantiene
+            this.createInventoryMovement(item, userId, product.getId(), supplierName, purchase.getStatus()); // mantiene
 
             itemList.add(item);
         }
@@ -142,7 +140,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         return itemList;
     }
 
-    private void createInventoryMovement(PurchaseItemsEntity purchaseItemsEntity, String userId, String productId,  String nameSupplier) throws BadRequestException, NotFoundException {
+    private void createInventoryMovement(PurchaseItemsEntity purchaseItemsEntity, String userId, String productId,  String nameSupplier, PurchaseStatus status) throws BadRequestException, NotFoundException {
         InventoryMovementDto inventoryMovement = new InventoryMovementDto();
         ProductDto product = new ProductDto();
         UserDto userDto = new UserDto();
@@ -151,12 +149,19 @@ public class PurchaseServiceImpl implements PurchaseService {
         inventoryMovement.setUser(userDto);
         inventoryMovement.setProduct(product);
         inventoryMovement.setQuantity(purchaseItemsEntity.getQuantity());
-        inventoryMovement.setType(InventoryMovementType.PURCHASE);
-        inventoryMovement.setDescription("Compra al Proveedor "+ nameSupplier);
+        switch (status) {
+            case COMPLETED -> {
+                inventoryMovement.setType(InventoryMovementType.PURCHASE);
+                inventoryMovement.setDescription("Compra al Proveedor "+ nameSupplier);
+            }
+            case CANCELED -> {
+                inventoryMovement.setType(InventoryMovementType.RETURN_PURCHASE);
+                inventoryMovement.setDescription("Cancelación de Compra al Proveedor "+ nameSupplier);
+            }
+        }
         this.inventoryMovementService.executeCreateInventoryMovement(inventoryMovement,null);
+
     }
-
-
 
     @Override
     public ApiResponseDto executeGetPurchase(String purchaseId) throws NotFoundException {
@@ -181,8 +186,40 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public ApiResponseDto executeCancelledPurchase(String purchaseId, PurchaseDto purchaseDto, BindingResult bindingResult) {
-        return null;
+    @Transactional(rollbackFor = Exception.class)
+    public ApiResponseDto executeCancelledPurchase(String purchaseId, PurchaseDto purchaseDto, BindingResult bindingResult) throws NotFoundException, BadRequestException {
+
+        PurchaseEntity purchase = this.getPurchaseById(purchaseId);
+        if (PurchaseStatus.CANCELED.equals(purchase.getStatus()))
+            throw new BadRequestException("Esta compra ya se encuentra cancelada");
+
+        SupplierEntity supplier = this.supplierService.getSupplierById(purchaseDto.getSupplier().getId());
+        UserEntity user = this.userService.getUserById(purchaseDto.getUser().getId());
+        boolean permissionCanceled = user.getRole().getPermissions().stream().anyMatch(permission -> permission.getName().equals(NamePermissions.PURCHASE_CANCEL));
+        if (!permissionCanceled)
+            throw new BadRequestException("No tienes permisos para cancelar la compra");
+
+        purchase.setStatus(PurchaseStatus.CANCELED);
+        purchase.setCancelledUser(user.getId());
+        purchase.setCancelledAt(new Date());
+        purchase = this.purchaseRepository.save(purchase);
+
+        List<ItemPurchaseDto> items = purchase.getItems().stream().map(purchaseMapper::convertToDtoItemsPurchase).toList();
+        this.canceledCashMovements(purchaseDto, purchaseId);
+        this.itemPurchase(purchase,items,user.getId(),supplier.getName());
+
+        return new ApiResponseDto(HttpStatus.OK.value(), "Se cancelo la compra exitosamente", this.purchaseMapper.convertToDto(purchase));
+    }
+
+    private void canceledCashMovements(PurchaseDto purchaseDto, String purchaseId) throws NotFoundException, BadRequestException {
+        if (PaymentMethod.CASH.equals(purchaseDto.getPaymentMethod())) {
+            CashMovementsEntity cashMovement = this.cashMovementsService.findByReferenceId(purchaseId);
+            CashMovementsDto cashMovementsDto = new CashMovementsDto();
+            cashMovementsDto.setStatus(CashMovementsStatus.CANCELED);
+            cashMovementsDto.setCancelledUser(purchaseDto.getUser().getId());
+            cashMovementsDto.setCancelledAt(new Date());
+            this.cashMovementsService.executeCanceledMovement(cashMovement.getId(),  cashMovementsDto, null);
+        }
     }
 
     @Override

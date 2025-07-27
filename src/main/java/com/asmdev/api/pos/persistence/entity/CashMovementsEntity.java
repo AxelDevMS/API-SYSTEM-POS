@@ -38,6 +38,10 @@ public class CashMovementsEntity {
     @Enumerated(EnumType.STRING)
     private CashMovementsStatus status;
 
+    private String cancelledUser;
+
+    private Date cancelledAt;
+
     @CreationTimestamp
     private Date createdAt;
 
@@ -130,5 +134,21 @@ public class CashMovementsEntity {
 
     public void setReferenceId(String referenceId) {
         this.referenceId = referenceId;
+    }
+
+    public String getCancelledUser() {
+        return cancelledUser;
+    }
+
+    public void setCancelledUser(String cancelledUser) {
+        this.cancelledUser = cancelledUser;
+    }
+
+    public Date getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public void setCancelledAt(Date cancelledAt) {
+        this.cancelledAt = cancelledAt;
     }
 }

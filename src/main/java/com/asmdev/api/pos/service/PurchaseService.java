@@ -14,7 +14,7 @@ public interface PurchaseService {
 
     ApiResponseDto executeGetPurchaseList(int page, int size, String supplierId, String purchaseId, String userId, String status, String startDate, String endDate) throws NotFoundException;
 
-    ApiResponseDto executeCancelledPurchase(String purchaseId, @Valid PurchaseDto purchaseDto, BindingResult bindingResult);
+    ApiResponseDto executeCancelledPurchase(String purchaseId, @Valid PurchaseDto purchaseDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;
 
     ApiResponseDto executeExportPurchase();
 

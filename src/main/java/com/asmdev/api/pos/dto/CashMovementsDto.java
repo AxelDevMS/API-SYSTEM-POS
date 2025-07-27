@@ -31,6 +31,10 @@ public class CashMovementsDto implements Serializable {
 
     private UserDto user;
 
+    private String cancelledUser;
+
+    private Date cancelledAt;
+
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
 
@@ -123,5 +127,21 @@ public class CashMovementsDto implements Serializable {
 
     public void setReferenceId(String referenceId) {
         this.referenceId = referenceId;
+    }
+
+    public String getCancelledUser() {
+        return cancelledUser;
+    }
+
+    public void setCancelledUser(String cancelledUser) {
+        this.cancelledUser = cancelledUser;
+    }
+
+    public Date getCancelledAt() {
+        return cancelledAt;
+    }
+
+    public void setCancelledAt(Date cancelledAt) {
+        this.cancelledAt = cancelledAt;
     }
 }
