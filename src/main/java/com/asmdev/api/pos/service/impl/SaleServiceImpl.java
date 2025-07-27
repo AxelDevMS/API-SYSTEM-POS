@@ -21,6 +21,7 @@ import com.asmdev.api.pos.utils.validations.ValidateInputs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
 import java.math.BigDecimal;
@@ -60,6 +61,7 @@ public class SaleServiceImpl implements SaleService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ApiResponseDto executeCreateSale(SaleDto saleDto, BindingResult bindingResult) throws BadRequestException, NotFoundException {
 
         List<ValidateInputDto> inputValidateList = this.validateInputs.validateInputs(bindingResult);
@@ -67,6 +69,13 @@ public class SaleServiceImpl implements SaleService {
             throw new BadRequestException("Campos invalidos", inputValidateList);
 
         CustomerEntity customer = this.customerRepository.findById(saleDto.getCustomer().getId()).orElse(null);
+        String customerName = "" ;
+        if (customer == null) {
+            customerName = null;
+        }else{
+            customerName = customer.getName();
+        }
+
         UserEntity user = this.userService.getUserById(saleDto.getUser().getId());
 
         BigDecimal total = saleDto.getItems().stream()
@@ -87,7 +96,7 @@ public class SaleServiceImpl implements SaleService {
 
         saleEntity = this.saleRepository.save(saleEntity);
         saleDto.setId(saleEntity.getId());
-        this.createCashMovements(saleDto,saleEntity.getCustomer().getName(),total);
+        this.createCashMovements(saleDto,customerName,total);
 
         return new ApiResponseDto(HttpStatus.CREATED.value(),"Se registro la venta exitosamente", this.saleMapper.convertToDto(saleEntity));
     }
