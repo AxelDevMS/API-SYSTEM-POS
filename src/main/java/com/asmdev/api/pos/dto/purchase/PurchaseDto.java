@@ -1,6 +1,5 @@
 package com.asmdev.api.pos.dto.purchase;
 
-import com.asmdev.api.pos.dto.CashMovementsDto;
 import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
 import com.asmdev.api.pos.dto.SupplierDto;
 import com.asmdev.api.pos.dto.UserDto;

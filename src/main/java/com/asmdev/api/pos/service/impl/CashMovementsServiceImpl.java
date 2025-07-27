@@ -1,6 +1,7 @@
 package com.asmdev.api.pos.service.impl;
 
 import com.asmdev.api.pos.dto.*;
+import com.asmdev.api.pos.dto.CashRegister.CashMovementsDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.mapper.CashMovementsMapper;
@@ -23,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;

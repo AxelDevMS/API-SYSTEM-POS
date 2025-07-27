@@ -1,6 +1,5 @@
 package com.asmdev.api.pos.dto.CashRegister;
 
-import com.asmdev.api.pos.dto.CashMovementsDto;
 import com.asmdev.api.pos.dto.UserDto;
 import com.asmdev.api.pos.utils.status.CashRegisterStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;

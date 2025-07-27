@@ -1,6 +1,6 @@
 package com.asmdev.api.pos.mapper;
 
-import com.asmdev.api.pos.dto.CashMovementsDto;
+import com.asmdev.api.pos.dto.CashRegister.CashMovementsDto;
 import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
 import com.asmdev.api.pos.dto.RoleDto;
 import com.asmdev.api.pos.dto.UserDto;

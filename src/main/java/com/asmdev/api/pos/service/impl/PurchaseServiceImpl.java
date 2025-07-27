@@ -1,6 +1,7 @@
 package com.asmdev.api.pos.service.impl;
 
 import com.asmdev.api.pos.dto.*;
+import com.asmdev.api.pos.dto.CashRegister.CashMovementsDto;
 import com.asmdev.api.pos.dto.purchase.ItemPurchaseDto;
 import com.asmdev.api.pos.dto.purchase.PurchaseDto;
 import com.asmdev.api.pos.exception.BadRequestException;

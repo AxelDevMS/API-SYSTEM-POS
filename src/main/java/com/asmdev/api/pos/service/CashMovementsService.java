@@ -1,17 +1,12 @@
 package com.asmdev.api.pos.service;
 
 import com.asmdev.api.pos.dto.ApiResponseDto;
-import com.asmdev.api.pos.dto.CashMovementsDto;
-import com.asmdev.api.pos.dto.DisabledRegisterDto;
+import com.asmdev.api.pos.dto.CashRegister.CashMovementsDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.persistence.entity.CashMovementsEntity;
 import com.asmdev.api.pos.utils.status.CashMovementsStatus;
-import jakarta.validation.Valid;
-import org.apache.juli.logging.Log;
 import org.springframework.validation.BindingResult;
-
-import java.math.BigDecimal;
 
 public interface CashMovementsService {
     ApiResponseDto executeCreateCashMovement(CashMovementsDto cashMovementsDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;

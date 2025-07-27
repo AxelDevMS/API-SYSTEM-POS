@@ -2,13 +2,11 @@ package com.asmdev.api.pos.controller;
 
 
 import com.asmdev.api.pos.dto.ApiResponseDto;
-import com.asmdev.api.pos.dto.CashMovementsDto;
-import com.asmdev.api.pos.dto.DisabledRegisterDto;
+import com.asmdev.api.pos.dto.CashRegister.CashMovementsDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
 import com.asmdev.api.pos.service.CashMovementsService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
