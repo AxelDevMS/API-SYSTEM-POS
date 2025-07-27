@@ -95,6 +95,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         purchaseEntity = this.purchaseRepository.save(purchaseEntity); // Volver a guardar con items
 
+        purchaseDto.setId(purchaseEntity.getId());
         this.createCashMovements(purchaseDto, supplier.getName(), total);
 
         return new ApiResponseDto(
@@ -113,6 +114,8 @@ public class PurchaseServiceImpl implements PurchaseService {
             cashMovementsDto.setConcept("Compra al Proveedor " + nameSupplier);
             cashMovementsDto.setAmount(total);
             cashMovementsDto.setUser(purchaseDto.getUser());
+            cashMovementsDto.setReferenceId(purchaseDto.getId());
+            cashMovementsDto.setReferenceType("PURCHASE");
 
             this.cashMovementsService.executeCreateCashMovement(cashMovementsDto, null);
         }
