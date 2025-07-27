@@ -12,6 +12,7 @@ import com.asmdev.api.pos.persistence.entity.*;
 import com.asmdev.api.pos.persistence.repository.CustomerRepository;
 import com.asmdev.api.pos.persistence.repository.SaleItemRepository;
 import com.asmdev.api.pos.persistence.repository.SaleRepository;
+import com.asmdev.api.pos.persistence.specification.SpecificationSale;
 import com.asmdev.api.pos.service.*;
 import com.asmdev.api.pos.utils.method.InventoryMovementType;
 import com.asmdev.api.pos.utils.method.PaymentMethod;
@@ -19,6 +20,10 @@ import com.asmdev.api.pos.utils.status.PurchaseStatus;
 import com.asmdev.api.pos.utils.status.TypeCashMovement;
 import com.asmdev.api.pos.utils.validations.ValidateInputs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +31,7 @@ import org.springframework.validation.BindingResult;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -162,5 +168,44 @@ public class SaleServiceImpl implements SaleService {
         }
     }
 
+    @Override
+    public ApiResponseDto executeExportSale() {
+        return null;
+    }
 
+    @Override
+    public ApiResponseDto executeCancelledSale(String saleId, SaleDto saleDto, BindingResult bindingResult) {
+        return null;
+    }
+
+    @Override
+    public ApiResponseDto executeGetSaleList(int page, int size, String customerId, String saleId, String userId, String status, String startDate, String endDate) throws NotFoundException {
+        Pageable pageable = PageRequest.of(page,size);
+        Specification<SaleEntity> filter = SpecificationSale.withFilter(customerId, saleId, userId, status, startDate, endDate);
+        Page<SaleEntity> saleListBD = this.saleRepository.findAll(filter,pageable);
+
+        if (saleListBD.isEmpty())
+            throw new NotFoundException("No hay ventas en el sistema");
+
+        List<SaleDto> saleDtos = saleListBD.getContent().stream().map(saleMapper::convertToDto).toList();
+        ListDataPaginationDto paginationDto =  new ListDataPaginationDto();
+        paginationDto.setData(Collections.singletonList(saleDtos));
+        paginationDto.setTotalElements((int) saleListBD.getTotalElements());
+        return new ApiResponseDto(HttpStatus.OK.value(), "Listado de ventas", paginationDto);
+    }
+
+    @Override
+    public ApiResponseDto executeGetSale(String saleId) throws NotFoundException {
+        SaleEntity sale = this.getSaleById(saleId);
+        return new ApiResponseDto(HttpStatus.OK.value(), "Información de la venta", this.saleMapper.convertToDto(sale));
+    }
+
+    @Override
+    public SaleEntity getSaleById(String saleId) throws NotFoundException {
+        SaleEntity sale = this.saleRepository.findById(saleId).orElse(null);
+        if (sale == null)
+            throw new NotFoundException("No existe esta venta en la base de datos");
+
+        return sale;
+    }
 }
