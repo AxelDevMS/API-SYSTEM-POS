@@ -98,7 +98,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ApiResponseDto executeDisabledCategory(String categoryId, DisabledRegisterDto disabledDto, BindingResult bindingResult) throws NotFoundException, BadRequestException {
         CategoryEntity categoryBD = this.getCategoryById(categoryId);
-        if (!categoryBD.getStatus().equals(Status.ACTIVE))
+        if (categoryBD.getStatus().equals(Status.valueOf(disabledDto.getStatus())))
             throw new BadRequestException("La categoria ya tiene asignado el estado '" + disabledDto.getStatus() + "'");
 
         categoryBD.setStatus(Status.valueOf(disabledDto.getStatus()));

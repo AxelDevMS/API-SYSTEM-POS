@@ -16,10 +16,8 @@ public class PermissionDto implements Serializable {
 
     private String id;
 
-    @NotNull(message = "El nombre del permiso es obligatorio")
     private NamePermissions name;
 
-    @NotNull(message = "El módulo es obligatorio")
     private ModuleSystem module;
 
     @NotNull(message = "El estado es obligatorio")

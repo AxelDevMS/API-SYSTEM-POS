@@ -63,8 +63,6 @@ public class PermissionServiceImpl implements PermissionService {
         if (permissionBD == null)
             throw new NotFoundException("No existe este registro con el ID "+permissionId);
 
-        permissionBD.setName(permissionDto.getName());
-        permissionBD.setModule(permissionDto.getModule());
         permissionBD.setDescription(permissionDto.getDescription());
         permissionBD.setStatus(permissionDto.getStatus());
         PermissionEntity permissionEdit = this.permissionRepository.save(permissionBD);
