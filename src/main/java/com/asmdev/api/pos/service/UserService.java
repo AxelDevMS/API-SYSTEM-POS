@@ -12,7 +12,7 @@ public interface UserService {
 
     ApiResponseDto executeCreateUser(UserDto userDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
     ApiResponseDto executeUpdateUser(String userId, UserDto userDto, BindingResult bindingResult) throws BadRequestException, NotFoundException;
-    ApiResponseDto executeGetListUsers(int page, int size, String userId, String status, String roleId, String  neighborhood, String municipality, String state, String hireDate) throws NotFoundException;
+    ApiResponseDto executeGetListUsers(int page, int size, String userId, String status, String roleId,  String hireDate) throws NotFoundException;
     ApiResponseDto executeGetLisUsersBySelect() throws NotFoundException;
     ApiResponseDto executeGetUser(String userId) throws NotFoundException;
     ApiResponseDto executeDisabledUser(String userId, DisabledRegisterDto disabledRegisterDto, BindingResult bindingResult) throws NotFoundException, BadRequestException;

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SpecificationUser {
 
-    public static Specification<UserEntity> withFilter(String userId, String status, String roleId, String neighborhood, String municipality, String state, String hireDate){
+    public static Specification<UserEntity> withFilter(String userId, String status, String roleId,  String hireDate){
         return ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -26,25 +26,21 @@ public class SpecificationUser {
             if (roleId != null && !roleId.isEmpty())
                 predicates.add(criteriaBuilder.equal(root.get("role").get("id"), roleId));
 
-            if (neighborhood != null && !neighborhood.isEmpty())
-                predicates.add(criteriaBuilder.equal(root.get("neighborhood"), neighborhood));
-
-            if (municipality != null && !municipality.isEmpty())
-                predicates.add(criteriaBuilder.equal(root.get("municipality"), municipality));
-
-            if (state != null && !state.isEmpty())
-                predicates.add(criteriaBuilder.equal(root.get("state"), state));
-
-            if (hireDate != null && !hireDate.isEmpty()){
+            if (hireDate != null && !hireDate.isEmpty()) {
                 try {
-                    // Suponiendo formato ISO: yyyy-MM-dd
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date parsedDate = sdf.parse(hireDate);
-                    predicates.add(criteriaBuilder.equal(root.get("hireDate"), parsedDate));
+                    SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
+                    Date parsedDate = formatDate.parse(hireDate);
+
+                    // Calcular inicio y fin del día
+                    Date startOfDay = parsedDate;
+                    Date endOfDay = new Date(parsedDate.getTime() + (24 * 60 * 60 * 1000) - 1);
+
+                    predicates.add(criteriaBuilder.between(root.get("hireDate"), startOfDay, endOfDay));
                 } catch (ParseException e) {
-                    throw new IllegalArgumentException("Formato de fecha inválido. Se espera yyyy-MM-dd.");
+                    throw new IllegalArgumentException("Formato de fecha inválido. Se espera dd/MM/yyyy.");
                 }
             }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
     }

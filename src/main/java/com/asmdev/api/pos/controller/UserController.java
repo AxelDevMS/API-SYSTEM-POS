@@ -27,12 +27,9 @@ public class UserController {
             @RequestParam(required = false) String userId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String roleId,
-            @RequestParam(required = false) String neighborhood,
-            @RequestParam(required = false) String municipality,
-            @RequestParam(required = false) String state,
             @RequestParam(required = false) String hireDate
     ) throws NotFoundException {
-        ApiResponseDto response = this.userService.executeGetListUsers(page, size, userId, status, roleId, neighborhood, municipality, state, hireDate);
+        ApiResponseDto response = this.userService.executeGetListUsers(page, size, userId, status, roleId, hireDate);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

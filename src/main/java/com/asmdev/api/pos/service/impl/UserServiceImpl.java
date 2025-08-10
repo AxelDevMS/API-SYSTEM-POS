@@ -103,7 +103,6 @@ public class UserServiceImpl implements UserService {
         userBD.setState(userDto.getState());
         userBD.setHireDate(userDto.getHireDate());
         userBD.setSalary(userDto.getSalary());
-        userBD.setEmployeeCode(userDto.getEmployeeCode());
         userBD.setStatus(userDto.getStatus());
         userBD.setRole(role);
 
@@ -112,9 +111,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResponseDto executeGetListUsers(int page, int size, String userId, String status, String roleId, String neighborhood, String municipality, String state, String hireDate) throws NotFoundException {
+    public ApiResponseDto executeGetListUsers(int page, int size, String userId, String status, String roleId,String hireDate) throws NotFoundException {
         Pageable pageable = PageRequest.of(page,size);
-        Specification<UserEntity> filter = SpecificationUser.withFilter(userId, status, roleId, neighborhood, municipality, state, hireDate);
+        Specification<UserEntity> filter = SpecificationUser.withFilter(userId, status, roleId, hireDate);
         Page<UserEntity> userListBD = this.userRepository.findAll(filter,pageable);
 
         if (userListBD.isEmpty())

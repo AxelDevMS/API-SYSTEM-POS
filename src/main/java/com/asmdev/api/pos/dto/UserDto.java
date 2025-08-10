@@ -58,6 +58,7 @@ public class UserDto implements Serializable {
     @Size(max = 100, message = "El estado no debe superar 100 caracteres")
     private String state; // Estado
 
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     @NotNull(message = "La fecha de contratación es obligatoria")
     @PastOrPresent(message = "La fecha de contratación debe ser pasada o presente")
     private Date hireDate; // Fecha de contratación
