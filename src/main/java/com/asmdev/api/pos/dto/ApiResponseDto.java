@@ -1,7 +1,10 @@
 package com.asmdev.api.pos.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseDto implements Serializable {
 
     private int statusCode;

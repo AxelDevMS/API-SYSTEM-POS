@@ -1,5 +1,6 @@
 package com.asmdev.api.pos.dto;
 
+import com.asmdev.api.pos.dto.Sale.SaleDto;
 import com.asmdev.api.pos.persistence.entity.SaleEntity;
 import com.asmdev.api.pos.utils.status.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -31,7 +32,7 @@ public class CustomerDto implements Serializable {
     @NotNull(message = "El estatus es obligatorio")
     private Status status;
 
-    private List<SaleEntity> sales;
+    private List<SaleDto> sales;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
@@ -79,11 +80,11 @@ public class CustomerDto implements Serializable {
         this.status = status;
     }
 
-    public List<SaleEntity> getSales() {
+    public List<SaleDto> getSales() {
         return sales;
     }
 
-    public void setSales(List<SaleEntity> sales) {
+    public void setSales(List<SaleDto> sales) {
         this.sales = sales;
     }
 

@@ -57,7 +57,7 @@ public class SupplierDto implements Serializable {
     @NotNull(message = "El estatus es obligatorio")
     private Status status;
 
-    private List<PurchaseEntity> purchases;
+    //private List<PurchaseEntity> purchases;
 
     @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "America/Mexico_City")
     private Date createdAt;
@@ -162,13 +162,7 @@ public class SupplierDto implements Serializable {
         this.status = status;
     }
 
-    public List<PurchaseEntity> getPurchases() {
-        return purchases;
-    }
 
-    public void setPurchases(List<PurchaseEntity> purchases) {
-        this.purchases = purchases;
-    }
 
     public Date getCreatedAt() {
         return createdAt;

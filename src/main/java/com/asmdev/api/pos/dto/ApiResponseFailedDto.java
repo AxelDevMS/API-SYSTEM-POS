@@ -1,11 +1,13 @@
 package com.asmdev.api.pos.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponseFailedDto implements Serializable {
 
     private int statusCode;

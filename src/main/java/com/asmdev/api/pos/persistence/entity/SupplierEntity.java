@@ -168,4 +168,5 @@ public class SupplierEntity {
     public void setPurchases(List<PurchaseEntity> purchases) {
         this.purchases = purchases;
     }
+
 }
