@@ -240,7 +240,7 @@ public class ProductServiceImpl implements ProductService {
             throw new BadRequestException("Campos invalidos", inputValidateList);
 
         ProductEntity productBD = this.getProductById(productId);
-        if (!productBD.getStatus().equals(ProductStatus.ACTIVE))
+        if (ProductStatus.valueOf(disabledRegisterDto.getStatus()).equals(productBD.getStatus()))
             throw new BadRequestException("El producto ya tiene asignado el estado '" + disabledRegisterDto.getStatus() + "'");
 
         CategoryEntity categoryBD = this.categoryService.getCategoryById(productBD.getCategory().getId());
