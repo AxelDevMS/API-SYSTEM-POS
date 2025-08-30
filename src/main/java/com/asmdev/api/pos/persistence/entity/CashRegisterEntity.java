@@ -150,4 +150,6 @@ public class CashRegisterEntity {
     public void setDifference(BigDecimal difference) {
         this.difference = difference;
     }
+
+
 }

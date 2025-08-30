@@ -38,13 +38,17 @@ public class CashMovementsMapper {
             cashRegisterDto.setId(cashMovementsEntity.getId());
             cashRegisterDto.setStatus(cashMovementsEntity.getCashRegister().getStatus());
             cashRegisterDto.setNotes(cashMovementsEntity.getCashRegister().getNotes());
+            cashRegisterDto.setCreatedAt(cashMovementsEntity.getCashRegister().getCreatedAt());
+
 
             roleDto.setId(cashMovementsEntity.getUser().getRole().getId());
             roleDto.setName(cashMovementsEntity.getUser().getRole().getName());
+            roleDto.setDescription(cashMovementsEntity.getUser().getRole().getDescription());
 
             userDto.setId(cashMovementsEntity.getUser().getId());
             userDto.setName(cashMovementsEntity.getUser().getName());
             userDto.setLastname(cashMovementsEntity.getUser().getLastname());
+            userDto.setStatus(cashMovementsEntity.getUser().getStatus());
             userDto.setRole(roleDto);
 
             dto.setUser(userDto);
