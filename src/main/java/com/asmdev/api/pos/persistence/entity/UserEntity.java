@@ -20,7 +20,7 @@ public class UserEntity {
 
     private String lastname; // Apellidos
 
-    private String email; // Correo
+    private String email; // Correo (viene siendo el username)
 
     private String password; // Contraseña
 
