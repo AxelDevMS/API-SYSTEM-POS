@@ -164,7 +164,9 @@ public class SaleServiceImpl implements SaleService {
             saleItemEntity.setProduct(product);
             saleItemEntity.setQuantity(item.getQuantity());
             saleItemEntity.setUnitPrice(item.getUnitPrice());
-            item.setTotal(item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+            BigDecimal total = item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+            saleItemEntity.setTotal(total);
+            item.setTotal(total);
 
             this.createInventoryMovement(saleItemEntity,userId,product.getId(),product.getName(),sale.getStatus());
             itemList.add(saleItemEntity);

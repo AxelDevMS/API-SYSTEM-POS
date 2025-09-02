@@ -1,5 +1,6 @@
 package com.asmdev.api.pos.mapper;
 
+import com.asmdev.api.pos.dto.CustomerDto;
 import com.asmdev.api.pos.dto.ProductDto;
 import com.asmdev.api.pos.dto.Sale.SaleDto;
 import com.asmdev.api.pos.dto.Sale.SaleItemDto;
@@ -32,8 +33,14 @@ public class SaleMapper {
         UserDto userDto = new UserDto();
         userDto.setId(saleEntity.getUser().getId());
         userDto.setName(saleEntity.getUser().getName());
+        userDto.setLastname(saleEntity.getUser().getLastname());
         dto.setUser(userDto);
 
+        /*CustomerDto customerDto = new CustomerDto();
+        customerDto.setId(saleEntity.getCustomer().getId());
+        customerDto.setName(saleEntity.getCustomer().getName());
+        customerDto.setLastname(saleEntity.getCustomer().getLastname());
+        dto.setCustomer(customerDto);*/
         // Ítems
         List<SaleItemDto> items = new ArrayList<>();
         for (SaleItemEntity item : saleEntity.getItems()) {

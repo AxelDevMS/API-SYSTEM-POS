@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,9 +26,6 @@ public class CustomerEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<SaleEntity> sales;
 
     @CreationTimestamp
     private Date createdAt;
@@ -75,13 +73,7 @@ public class CustomerEntity {
         this.status = status;
     }
 
-    public List<SaleEntity> getSales() {
-        return sales;
-    }
 
-    public void setSales(List<SaleEntity> sales) {
-        this.sales = sales;
-    }
 
     public Date getCreatedAt() {
         return createdAt;

@@ -19,17 +19,7 @@ public class CustomerMapper {
     private ModelMapper modelMapper;
 
     public CustomerDto convertToDto(CustomerEntity customerEntity){
-        //return this.modelMapper.map(customerEntity, CustomerDto.class);
-        CustomerDto dto = this.modelMapper.map(customerEntity, CustomerDto.class);
-        List<SaleDto> sales = new ArrayList<>();
-        for (SaleEntity item: customerEntity.getSales()){
-            SaleDto saleDto = new SaleDto();
-            saleDto.setId(item.getId());
-            saleDto.setStatus(item.getStatus());
-        }
-        dto.setSales(sales);
-
-        return dto;
+        return this.modelMapper.map(customerEntity, CustomerDto.class);
     }
 
     public CustomerEntity convertToEntity(CustomerDto customerDto){
