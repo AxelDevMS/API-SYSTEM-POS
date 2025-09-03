@@ -15,8 +15,11 @@ import java.util.Set;
 
 public class CustomUserDetails implements UserDetails {
 
-    @Autowired
-    private UserEntity userEntity;
+    private final UserEntity userEntity;
+
+    public CustomUserDetails(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
 
 
     @Override
