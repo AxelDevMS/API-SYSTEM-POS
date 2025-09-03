@@ -6,6 +6,7 @@ import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.dto.ProductDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.ProductPreAuthorize.*;
 import com.asmdev.api.pos.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,14 @@ public class ProductController {
     private ProductService productService;
 
 
+    @CanImportProduct
     @PostMapping("/import")
     public ResponseEntity<ApiResponseDto> executeImportProducts(@RequestParam("file")MultipartFile file) throws BadRequestException {
         ApiResponseDto response = this.productService.executeImportMassiveProducts(file);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanCreatedProduct
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateProduct(
             @Valid @RequestBody ProductDto productDto,
@@ -37,6 +40,7 @@ public class ProductController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
+    @CanUpdatedProduct
     @PutMapping("/update/{productId}")
     public ResponseEntity<ApiResponseDto> executeUpdateProduct(
             @PathVariable String productId,
@@ -47,24 +51,28 @@ public class ProductController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListProduct
     @GetMapping("/select")
     public ResponseEntity<ApiResponseDto> executeGetProductListBySelect() throws NotFoundException {
         ApiResponseDto response = this.productService.executeGetProductListBySelect();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanGetProduct
     @GetMapping("get/{productId}")
     public ResponseEntity<ApiResponseDto> executeGetProduct(@PathVariable String productId) throws NotFoundException {
         ApiResponseDto response = this.productService.executeGetProduct(productId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanGetLowStockProduct
     @GetMapping("get/low-stock")
     public ResponseEntity<ApiResponseDto> executeGetLowStockProductList() throws NotFoundException {
         ApiResponseDto response = this.productService.executeGetLowStockProductList();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanExportProduct
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportProducts() throws BadRequestException {
         byte[] fileBytes = this.productService.executeExportProducts();
@@ -78,6 +86,7 @@ public class ProductController {
         return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
     }
 
+    @CanDeletedProduct
     @PatchMapping("/disabled/{productId}")
     public ResponseEntity<ApiResponseDto> executeDisabledProduct(
             @PathVariable String productId,
@@ -88,6 +97,7 @@ public class ProductController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListProduct
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetProductList(
             @RequestParam(defaultValue = "0") int page,

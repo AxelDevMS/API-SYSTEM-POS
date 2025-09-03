@@ -4,7 +4,6 @@ package com.asmdev.api.pos.controller;
 import com.asmdev.api.pos.dto.authentication.JwtResponseDto;
 import com.asmdev.api.pos.dto.authentication.LoginRequestDto;
 import com.asmdev.api.pos.dto.authentication.MessageResponseDto;
-import com.asmdev.api.pos.security.jwt.JwtAuthenticationEntryPoint;
 import com.asmdev.api.pos.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -27,17 +26,13 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid  @RequestBody LoginRequestDto loginRequest) {
-        logger.info("ENTRA ALA FUNCION");
         try {
-            logger.info("ENTRA AL TRY");
             JwtResponseDto response = authService.authenticateUser(loginRequest);
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
-            logger.info("ENTRA AL catrch");
             return ResponseEntity.badRequest()
                     .body(new MessageResponseDto("Error: Credenciales inválidas!"));
         } catch (Exception e) {
-            logger.info("ENTRA AL catrch");
 
             return ResponseEntity.badRequest()
                     .body(new MessageResponseDto("Error: " + e.getMessage()));

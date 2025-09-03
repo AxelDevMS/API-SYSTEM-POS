@@ -5,6 +5,7 @@ import com.asmdev.api.pos.dto.Sale.SaleDto;
 import com.asmdev.api.pos.dto.purchase.PurchaseDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.SalePreAuthorize.*;
 import com.asmdev.api.pos.service.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class SaleController {
     @Autowired
     private SaleService saleService;
 
+    @CanCreatedSale
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateSale(
             @Valid @RequestBody SaleDto saleDto,
@@ -29,12 +31,14 @@ public class SaleController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanGetSale
     @GetMapping("/get/{saleId}")
     public ResponseEntity<ApiResponseDto> executeGetSale(@PathVariable String saleId) throws NotFoundException {
         ApiResponseDto response = this.saleService.executeGetSale(saleId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListSale
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetSaleList(
             @RequestParam(defaultValue = "0") int page,
@@ -50,6 +54,7 @@ public class SaleController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanCanceledSale
     @PatchMapping("/cancelled/{saleId}")
     public ResponseEntity<ApiResponseDto> executeCancelledSale(
             @PathVariable String saleId,
@@ -60,6 +65,7 @@ public class SaleController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanExportSale
     @GetMapping("/export")
     public ResponseEntity<ApiResponseDto> executeExportSale(){
         ApiResponseDto response = this.saleService.executeExportSale();

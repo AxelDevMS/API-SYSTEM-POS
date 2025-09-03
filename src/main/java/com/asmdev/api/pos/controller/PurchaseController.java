@@ -4,6 +4,7 @@ import com.asmdev.api.pos.dto.ApiResponseDto;
 import com.asmdev.api.pos.dto.purchase.PurchaseDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.PurchasePreAuthorize.*;
 import com.asmdev.api.pos.service.PurchaseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class PurchaseController {
     private PurchaseService purchaseService;
 
 
+    @CanCreatedPurchase
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreatePurchase(
             @Valid @RequestBody PurchaseDto purchaseDto,
@@ -29,12 +31,14 @@ public class PurchaseController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanGetPurchase
     @GetMapping("/get/{purchaseId}")
     public ResponseEntity<ApiResponseDto> executeGetPurchase(@PathVariable String purchaseId) throws NotFoundException {
         ApiResponseDto response = this.purchaseService.executeGetPurchase(purchaseId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListPurchase
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetPurchaseList(
             @RequestParam(defaultValue = "0") int page,
@@ -50,6 +54,7 @@ public class PurchaseController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanCanceledPurchase
     @PatchMapping("/cancelled/{purchaseId}")
     public ResponseEntity<ApiResponseDto> executeCancelledPurchase(
             @PathVariable String purchaseId,
@@ -60,6 +65,7 @@ public class PurchaseController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanExportPurchase
     @GetMapping("/export")
     public ResponseEntity<ApiResponseDto> executeExportPurchase(){
         ApiResponseDto response = this.purchaseService.executeExportPurchase();

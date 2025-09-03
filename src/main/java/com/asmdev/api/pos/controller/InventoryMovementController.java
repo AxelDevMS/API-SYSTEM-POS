@@ -5,6 +5,7 @@ import com.asmdev.api.pos.dto.ApiResponseDto;
 import com.asmdev.api.pos.dto.InventoryMovementDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.InventoryMovementPreAuthorize.*;
 import com.asmdev.api.pos.service.InventoryMovementService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class InventoryMovementController {
     @Autowired
     private InventoryMovementService inventoryMovementService;
 
+    @CanCreateInventoryMovement
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateInventoryMovement(
             @Valid @RequestBody InventoryMovementDto inventoryMovementDto,
@@ -29,6 +31,7 @@ public class InventoryMovementController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanListInventoryMovement
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetInventoryMovementList(
             @RequestParam(defaultValue = "0") int page,
@@ -43,12 +46,14 @@ public class InventoryMovementController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanGetInventoryMovement
     @GetMapping("/get/{inventoryMovementId}")
     public ResponseEntity<ApiResponseDto> executeGetInventoryMovement(@PathVariable String inventoryMovementId ) throws NotFoundException {
         ApiResponseDto response = this.inventoryMovementService.executeGetInventoryMovement(inventoryMovementId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanCanceledInventoryMovement
     @PatchMapping("/deleted/{inventoryMovementId}")
     public ResponseEntity<ApiResponseDto> executeDeletedInventoryMovement(@PathVariable String inventoryMovementId ){
         ApiResponseDto response = this.inventoryMovementService.executeDeletedInventoryMovement(inventoryMovementId);

@@ -4,6 +4,7 @@ import com.asmdev.api.pos.dto.ApiResponseDto;
 import com.asmdev.api.pos.dto.CashRegister.CashRegisterDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.CashRegisterPreAuthorize.*;
 import com.asmdev.api.pos.service.CashRegisterService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class CashRegisterController {
     @Autowired
     private CashRegisterService cashRegisterService;
 
+    @CanCreateRegisterCash
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateCashRegister(
             @Valid @RequestBody CashRegisterDto cashRegisterDto,
@@ -30,6 +32,7 @@ public class CashRegisterController {
     }
 
 
+    @CanListRegisterCash
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetCashRegisterList(
             @RequestParam(defaultValue = "0") int page,
@@ -43,18 +46,21 @@ public class CashRegisterController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListRegisterCash
     @GetMapping("/select")
     public ResponseEntity<ApiResponseDto> executeGetCashRegisterListBySelect() throws NotFoundException {
         ApiResponseDto response = this.cashRegisterService.executeGetCashRegisterListBySelect();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanGetRegisterCash
     @GetMapping("/get/{cashRegisterId}")
     public ResponseEntity<ApiResponseDto> executeGetCashRegister(@PathVariable String cashRegisterId) throws NotFoundException {
         ApiResponseDto response = this.cashRegisterService.executeGetCashRegister(cashRegisterId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanClosedRegisterCash
     @PatchMapping("/closed/{cashRegisterId}")
     public ResponseEntity<ApiResponseDto> executeCloseCashRegister(
             @PathVariable String cashRegisterId,
@@ -65,6 +71,7 @@ public class CashRegisterController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanUpdateRegisterCash
     @PutMapping("/update/{cashRegisterId}")
     public ResponseEntity<ApiResponseDto> executeUpdateCashRegister(
             @PathVariable String cashRegisterId,

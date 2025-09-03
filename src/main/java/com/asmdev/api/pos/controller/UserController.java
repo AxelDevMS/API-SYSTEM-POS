@@ -5,6 +5,7 @@ import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.dto.UserDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.UserPreAuthorize.*;
 import com.asmdev.api.pos.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @CanListUsers
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetListUsers(
             @RequestParam(defaultValue = "0") int page,
@@ -33,18 +35,21 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanListUsers
     @GetMapping("/get-select")
     public ResponseEntity<ApiResponseDto> executeGetListBySelect() throws NotFoundException {
         ApiResponseDto response = this.userService.executeGetLisUsersBySelect();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanGetUser
     @GetMapping("/get/{userId}")
     public ResponseEntity<ApiResponseDto> executeGetUser(@PathVariable String userId) throws NotFoundException {
         ApiResponseDto response = this.userService.executeGetUser(userId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanCreateUser
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateUser(
             @Valid @RequestBody UserDto userDto,
@@ -55,6 +60,7 @@ public class UserController {
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
+    @CanUpdateUser
     @PutMapping("/update/{userId}")
     public ResponseEntity<ApiResponseDto> executeUpdateUser(
             @PathVariable String userId,
@@ -65,6 +71,7 @@ public class UserController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanDeleteUser
     @PatchMapping("disabled/{userId}")
     public ResponseEntity<ApiResponseDto> executeDisabledUser(
             @PathVariable String userId,

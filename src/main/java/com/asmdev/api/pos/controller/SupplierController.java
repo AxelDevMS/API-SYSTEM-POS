@@ -5,6 +5,7 @@ import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.dto.SupplierDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.SupplierPreAuthorize.*;
 import com.asmdev.api.pos.service.SupplierService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class SupplierController {
     @Autowired
     private SupplierService supplierService;
 
+    @CanCreatedSupplier
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateSupplier(
             @Valid @RequestBody SupplierDto supplierDto,
@@ -30,6 +32,7 @@ public class SupplierController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanUpdatedSupplier
     @PutMapping("/update/{supplierId}")
     public ResponseEntity<ApiResponseDto> executeUpdateSupplier(
             @PathVariable String supplierId,
@@ -40,6 +43,7 @@ public class SupplierController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanDeletedSupplier
     @PatchMapping("/disabled/{supplierId}")
     public ResponseEntity<ApiResponseDto> executeDisabledSupplier(
             @PathVariable String supplierId,
@@ -50,6 +54,7 @@ public class SupplierController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanListSupplier
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetSupplierList(
             @RequestParam(defaultValue = "0") int page,
@@ -61,18 +66,21 @@ public class SupplierController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListSupplier
     @GetMapping("/select")
     public ResponseEntity<ApiResponseDto> executeGetSupplierListBySelect() throws NotFoundException {
         ApiResponseDto response = this.supplierService.executeGetSupplierListBySelect();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanGetSupplier
     @GetMapping("/get/{supplierId}")
     public ResponseEntity<ApiResponseDto> executeGetSupplier(@PathVariable String supplierId) throws NotFoundException {
         ApiResponseDto response = this.supplierService.executeGetSupplier(supplierId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanImportSupplier
     @PostMapping("/import")
     public ResponseEntity<ApiResponseDto> executeImportSupplier(@RequestParam("file")MultipartFile file) throws BadRequestException {
         ApiResponseDto response = this.supplierService.executeImportSupplier(file);

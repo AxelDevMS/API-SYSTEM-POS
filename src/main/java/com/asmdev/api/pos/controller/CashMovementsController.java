@@ -5,6 +5,7 @@ import com.asmdev.api.pos.dto.ApiResponseDto;
 import com.asmdev.api.pos.dto.CashRegister.CashMovementsDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.CashMovementPreAuthorize.*;
 import com.asmdev.api.pos.service.CashMovementsService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ public class CashMovementsController {
     @Autowired
     private CashMovementsService cashMovementsService;
 
+    @CanCreateMovementCash
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateCashMovement(
             @Valid @RequestBody CashMovementsDto cashMovementsDto,
@@ -29,6 +31,7 @@ public class CashMovementsController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanListMovementsCash
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetCashMovementList(
             @RequestParam(defaultValue = "0") int page,
@@ -44,12 +47,14 @@ public class CashMovementsController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanGetMovementCash
     @GetMapping("/get/{cashRegisterId}")
     public ResponseEntity<ApiResponseDto> executeGetCashMovement(@PathVariable String cashRegisterId) throws NotFoundException {
         ApiResponseDto response = this.cashMovementsService.executeGetCashMovement(cashRegisterId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanUpdateMovementCash
     @PutMapping("/update/{cashRegisterId}")
     public ResponseEntity<ApiResponseDto> executeUpdateMovement(
             @PathVariable String cashRegisterId,
@@ -60,6 +65,7 @@ public class CashMovementsController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanDeleteMovementCash
     @PatchMapping("/disabled/{cashRegisterId}")
     public ResponseEntity<ApiResponseDto> executeCanceledMovement(
             @PathVariable String cashRegisterId,

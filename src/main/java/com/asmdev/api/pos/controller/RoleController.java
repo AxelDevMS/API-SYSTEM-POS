@@ -6,6 +6,7 @@ import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.dto.RoleDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.RolePreAuthorize.*;
 import com.asmdev.api.pos.service.RoleService;
 import jakarta.persistence.Access;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
 
+    @CanListRoles
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> execuetGetListRoles(
             @RequestParam(defaultValue = "0") int page,
@@ -33,24 +35,28 @@ public class RoleController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanListRoles
     @GetMapping("/list/select")
     public ResponseEntity<ApiResponseDto> executeGetListRolesBySelect() throws NotFoundException {
         ApiResponseDto response  = this.roleService.executeGetListRolesBySelect();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanGetRole
     @GetMapping("/get/{roleId}")
     public ResponseEntity<ApiResponseDto> executeGetRole(@PathVariable String roleId) throws NotFoundException {
         ApiResponseDto response = this.roleService.executeGetRole(roleId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanCreateRole
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateRole(@Valid @RequestBody RoleDto roleDto, BindingResult bindingResult) throws BadRequestException, NotFoundException {
         ApiResponseDto response = this.roleService.executeCreateRole(roleDto, bindingResult);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
+    @CanUpdateRole
     @PutMapping("/update/{roleId}")
     public ResponseEntity<ApiResponseDto> executeUpdateRole(
             @PathVariable String roleId,
@@ -61,6 +67,7 @@ public class RoleController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanDeleteRole
     @PatchMapping("/disabled/{roleId}")
     public ResponseEntity<ApiResponseDto> executeDisabledRole(
             @PathVariable String roleId,

@@ -6,6 +6,7 @@ import com.asmdev.api.pos.dto.CustomerDto;
 import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.CustomerPreAuthorize.*;
 import com.asmdev.api.pos.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
+    @CanCreateCustomer
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateCustomer(
             @Valid @RequestBody CustomerDto customerDto,
@@ -30,6 +32,7 @@ public class CustomerController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanUpdateCustomer
     @PutMapping("/update/{customerId}")
     public ResponseEntity<ApiResponseDto> executeUpdateCustomer(
             @PathVariable String customerId,
@@ -40,6 +43,7 @@ public class CustomerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanDeleteCustomer
     @PatchMapping("/disabled/{customerId}")
     public ResponseEntity<ApiResponseDto> executeDisabledCustomer(
             @PathVariable String customerId,
@@ -50,6 +54,7 @@ public class CustomerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListCustomer
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetCustomerList(
             @RequestParam(defaultValue = "0") int page,
@@ -61,12 +66,14 @@ public class CustomerController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListCustomer
     @GetMapping("/select")
     public ResponseEntity<ApiResponseDto> executeGetCustomerListBySelect() throws NotFoundException {
         ApiResponseDto response = this.customerService.executeGetCustomerListBySelect();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanGetCustomer
     @GetMapping("/get/{customerId}")
     public ResponseEntity<ApiResponseDto> executeGetCustomer(@PathVariable String customerId) throws NotFoundException {
         ApiResponseDto response = this.customerService.executeGetCustomer(customerId);

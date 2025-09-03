@@ -6,6 +6,7 @@ import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.dto.PermissionDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.PermissionPreAuthorize.*;
 import com.asmdev.api.pos.service.PermissionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class PermissionController {
 
     @Autowired
     private PermissionService permissionService;
+
 
 
     @PostMapping("/save")
@@ -40,12 +42,14 @@ public class PermissionController {
     }
 
 
+    @CanGetPermission
     @GetMapping("/get/{permissionId}")
     public ResponseEntity<ApiResponseDto> executeGetPermission(@PathVariable String permissionId) throws NotFoundException {
         ApiResponseDto response = this.permissionService.executeGetPermission(permissionId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanListPermisisons
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetListPermissions(
             @RequestParam(defaultValue = "0") int page,
@@ -69,6 +73,7 @@ public class PermissionController {
     }
 
 
+    @CanListPermisisons
     @GetMapping("/list-select")
     public ResponseEntity<ApiResponseDto> executeGetListPermissionBySelect() throws NotFoundException {
         ApiResponseDto response = this.permissionService.executeGetListPermissionsBySelect();

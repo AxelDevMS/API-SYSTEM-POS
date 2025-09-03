@@ -5,6 +5,7 @@ import com.asmdev.api.pos.dto.CategoryDto;
 import com.asmdev.api.pos.dto.DisabledRegisterDto;
 import com.asmdev.api.pos.exception.BadRequestException;
 import com.asmdev.api.pos.exception.NotFoundException;
+import com.asmdev.api.pos.security.preauthorize.CategoryPreAuthorize.*;
 import com.asmdev.api.pos.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @CanListCategory
     @GetMapping("/get-alls")
     public ResponseEntity<ApiResponseDto> executeGetListCategories(
             @RequestParam(defaultValue = "0") int page,
@@ -32,18 +34,21 @@ public class CategoryController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @CanListCategory
     @GetMapping("/list-select")
     public ResponseEntity<ApiResponseDto> executeGetListCategoriesBySelect() throws NotFoundException {
         ApiResponseDto response = this.categoryService.executeGetListCategoriesBySelect();
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanGetCategory
     @GetMapping("/get/{categoryId}")
     public ResponseEntity<ApiResponseDto> executeGetCategory(@PathVariable String categoryId) throws NotFoundException {
         ApiResponseDto response = this.categoryService.executeGetCategory(categoryId);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanCreateCategory
     @PostMapping("/save")
     public ResponseEntity<ApiResponseDto> executeCreateCategory(
             @Valid @RequestBody CategoryDto categoryDto,
@@ -53,6 +58,7 @@ public class CategoryController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @CanUpdateCategory
     @PutMapping("/update/{categoryId}")
     public ResponseEntity<ApiResponseDto> executeUpdateCategory(
             @PathVariable String categoryId,
@@ -63,6 +69,7 @@ public class CategoryController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanDeletedCategory
     @PatchMapping("/disabled/{categoryId}")
     public ResponseEntity<ApiResponseDto> executeDisabledCategory(
             @PathVariable String categoryId,
@@ -73,6 +80,7 @@ public class CategoryController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
+    @CanImportCategory
     @PostMapping("upload")
     public ResponseEntity<ApiResponseDto> executeUploadMassiveCategories(@RequestParam("file") MultipartFile file) throws BadRequestException {
         ApiResponseDto response = this.categoryService.executeCreateMassiveCategories(file);
