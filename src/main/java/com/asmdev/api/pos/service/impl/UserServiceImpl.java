@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 
@@ -43,6 +44,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ValidateInputs validateInputs;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public ApiResponseDto executeCreateUser(UserDto userDto, BindingResult bindingResult) throws BadRequestException, NotFoundException {
         List<ValidateInputDto> inputsValidate = this.validateInputs.validateInputs(bindingResult);
@@ -65,6 +69,7 @@ public class UserServiceImpl implements UserService {
 
         UserEntity userSave = this.userMapper.convertToEntity(userDto);
         userSave.setRole(role);
+        userSave.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userSave.setEmployeeCode(EmployeeCodeGenerator.generateCodeEmployee());
         userSave = this.userRepository.save(userSave);
 
