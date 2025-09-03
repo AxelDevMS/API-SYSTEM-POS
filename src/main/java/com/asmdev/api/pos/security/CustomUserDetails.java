@@ -67,7 +67,7 @@ public class CustomUserDetails implements UserDetails {
         return this.userEntity.getStatus().equals(UserStatus.ACTIVE);
     }
 
-    public UserEntity user(){
+    public UserEntity getUser(){
         return userEntity;
     }
 }
