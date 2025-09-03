@@ -4,47 +4,54 @@ import com.asmdev.api.pos.persistence.entity.PermissionEntity;
 import com.asmdev.api.pos.persistence.entity.RoleEntity;
 import com.asmdev.api.pos.persistence.entity.UserEntity;
 import com.asmdev.api.pos.utils.status.UserStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
 
-    private final UserEntity userEntity;
+    private final UserEntity user;
 
-    public CustomUserDetails(UserEntity userEntity) {
-        this.userEntity = userEntity;
+    private final List<GrantedAuthority> authorities;
+
+    private final String role; // Rol principal
+
+    private final List<String> permissions; // Lista de permisos
+
+
+    public CustomUserDetails(UserEntity user) {
+        this.user = user;
+        this.role = "ROLE_" + user.getRole().getName(); // Solo el nombre del rol
+
+        // Permisos sin el prefijo del rol
+        this.permissions = user.getRole().getPermissions().stream()
+                .map(permission -> permission.getName().name())
+                .collect(Collectors.toList());
+
+        // Authorities para Spring Security (combinación de rol + permisos)
+        this.authorities = new ArrayList<>();
+        this.authorities.add(new SimpleGrantedAuthority(this.role));
+        this.permissions.forEach(permission ->
+                this.authorities.add(new SimpleGrantedAuthority(permission))
+        );
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-
-        //agregar roles
-        RoleEntity roleEntity = this.userEntity.getRole();
-        authorities.add(new SimpleGrantedAuthority(roleEntity.getName()));
-        for (PermissionEntity permission: roleEntity.getPermissions() ){
-            authorities.add(new SimpleGrantedAuthority(String.valueOf(permission.getName())));
-        }
-
         return authorities;
-
     }
 
     @Override
     public String getPassword() {
-        return userEntity.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return userEntity.getEmail();
+        return user.getEmail();
     }
 
     @Override
@@ -54,7 +61,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return user.getStatus() != UserStatus.LOCKED;
     }
 
     @Override
@@ -64,10 +71,19 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.userEntity.getStatus().equals(UserStatus.ACTIVE);
+        return user.getStatus() == UserStatus.ACTIVE;
     }
 
-    public UserEntity getUser(){
-        return userEntity;
+    public UserEntity getUser() {
+        return user;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public List<String> getPermissions() {
+        return permissions;
+    }
+
 }

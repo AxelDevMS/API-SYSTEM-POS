@@ -1,26 +1,29 @@
 package com.asmdev.api.pos.dto.authentication;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class JwtResponseDto {
+public class JwtResponseDto implements Serializable {
 
     private String token;
     private String type = "Bearer";
     private String id;
     private String email;
-    private List<String> roles;
+    private String role; // Cambiado de List<String> a String
     private List<String> permissions;
+
+    public JwtResponseDto(String token, String type, String id, String email,
+                          String role, List<String> permissions) {
+        this.token = token;
+        this.type = type;
+        this.id = id;
+        this.email = email;
+        this.role = role;
+        this.permissions = permissions;
+    }
 
 
     public JwtResponseDto(){}
-
-    public JwtResponseDto(String accessToken, String id, String email, List<String> roles, List<String> permissions) {
-        this.token = accessToken;
-        this.id = id;
-        this.email = email;
-        this.roles = roles;
-        this.permissions = permissions;
-    }
 
     public String getToken() {
         return token;
@@ -46,8 +49,6 @@ public class JwtResponseDto {
         this.id = id;
     }
 
-
-
     public String getEmail() {
         return email;
     }
@@ -56,12 +57,12 @@ public class JwtResponseDto {
         this.email = email;
     }
 
-    public List<String> getRoles() {
-        return roles;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public List<String> getPermissions() {

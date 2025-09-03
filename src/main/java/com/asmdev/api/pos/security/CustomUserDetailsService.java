@@ -17,10 +17,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity userEntity = this.userRepository.findByEmail(username)
-                .orElseThrow(()-> new UsernameNotFoundException("Usuario no encontrado "+ username));
+    @Transactional
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
-        return new CustomUserDetails(userEntity);
+        return new CustomUserDetails(user);
     }
 }

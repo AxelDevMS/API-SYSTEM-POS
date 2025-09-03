@@ -1,6 +1,8 @@
 package com.asmdev.api.pos.dto.authentication;
 
-public class LoginRequestDto {
+import java.io.Serializable;
+
+public class LoginRequestDto implements Serializable {
 
     private String email;
 

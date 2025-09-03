@@ -3,104 +3,76 @@ package com.asmdev.api.pos.security.jwt;
 
 import com.asmdev.api.pos.security.CustomUserDetails;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 @Service
 public class JwtService {
 
-    @Value("${app.jwt.secret}")
-    private String jwtSecret;
+    @Value("${jwt.secret}")
+    private String secret;
 
-    @Value("${app.jwt.expiration}")
-    private String jwtExpirationMs;
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
-    private Key getSigningKey(){
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-
-        // Agregar roles y permisos al token
-        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        claims.put("authorities", authorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
-
-        if (userDetails instanceof CustomUserDetails) {
-            CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-            claims.put("userId", customUserDetails.getUser().getId());
-            claims.put("email", customUserDetails.getUser().getEmail());
-        }
-
-        return createToken(claims, userDetails.getUsername());
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
-
-        return Jwts.builder()
-                .claims(claims)
-                .subject(subject)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey())
-                .compact();
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 
-    public String getUsernameFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getSubject();
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
     }
 
-    public List<String> getAuthoritiesFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.get("authorities", List.class);
-    }
-
-    public Long getUserIdFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.get("userId", Long.class);
-    }
-
-    private Claims getClaimsFromToken(String token) {
+    private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .verifyWith((SecretKey) getSigningKey())
+                .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
     }
 
-    public boolean validateToken(String token) {
-        try {
-            getClaimsFromToken(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
-        }
+    private Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
     }
 
-    public boolean isTokenExpired(String token) {
-        try {
-            Claims claims = getClaimsFromToken(token);
-            return claims.getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
-            return true;
-        }
+    public String generateToken(CustomUserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", userDetails.getRole());
+        claims.put("permissions", userDetails.getPermissions());
+        claims.put("userId", userDetails.getUser().getId());
+
+        return createToken(claims, userDetails.getUsername());
+    }
+
+    private String createToken(Map<String, Object> claims, String subject) {
+        return Jwts.builder()
+                .claims(claims)
+                .subject(subject)
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
 }

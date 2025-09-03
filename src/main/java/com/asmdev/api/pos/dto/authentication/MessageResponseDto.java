@@ -1,6 +1,8 @@
 package com.asmdev.api.pos.dto.authentication;
 
-public class MessageResponseDto {
+import java.io.Serializable;
+
+public class MessageResponseDto implements Serializable {
 
     private String message;
 

@@ -50,6 +50,7 @@ public class RoleServiceImpl implements RoleService {
         List<PermissionEntity> permissionList = permissionService.validatePermissions(roleDto.getPermissions());
         RoleEntity roleSave = roleMapper.convertToEntity(roleDto);
         roleSave.setPermissions(permissionList);
+        roleSave.setName(roleDto.getName().toUpperCase());
         roleSave = roleRepository.save(roleSave);
         return new ApiResponseDto(HttpStatus.CREATED.value(),"Se registro el Rol de forma existosa",roleMapper.convertToDto(roleSave));
     }
@@ -65,7 +66,7 @@ public class RoleServiceImpl implements RoleService {
         if (!inputsValidate.isEmpty())
             throw new BadRequestException("Campos invalidos", inputsValidate);
 
-        roleBD.setName(roleDto.getName());
+        roleBD.setName(roleDto.getName().toUpperCase());
         roleBD.setDescription(roleDto.getDescription());
         roleBD.setStatus(roleDto.getStatus());
         roleBD.setPermissions(permissionService.validatePermissions(roleDto.getPermissions()));

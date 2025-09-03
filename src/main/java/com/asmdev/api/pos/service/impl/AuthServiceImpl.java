@@ -55,22 +55,19 @@ public class AuthServiceImpl implements AuthService {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String jwt = jwtService.generateToken(userDetails);
 
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .filter(authority -> authority.startsWith("ROLE_"))
-                .collect(Collectors.toList());
+        // Obtener el rol principal
+        String role = userDetails.getRole();
 
-        List<String> permissions = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .filter(authority -> !authority.startsWith("ROLE_"))
-                .collect(Collectors.toList());
+        // Obtener los permisos (sin el prefijo del rol)
+        List<String> permissions = userDetails.getPermissions();
 
         return new JwtResponseDto(
                 jwt,
+                "Bearer",
                 userDetails.getUser().getId(),
-                userDetails.getUser().getEmail(),
-                roles,
-                permissions
+                userDetails.getUsername(),
+                role, // Solo un rol
+                permissions // Lista de permisos
         );
     }
 
@@ -78,5 +75,4 @@ public class AuthServiceImpl implements AuthService {
     public MessageResponseDto registerUser(SignupRequestDto signupRequestDto) {
         return null;
     }
-
 }
