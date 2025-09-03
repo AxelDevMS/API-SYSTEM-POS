@@ -196,7 +196,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         SupplierEntity supplier = this.supplierService.getSupplierById(purchaseDto.getSupplier().getId());
         UserEntity user = this.userService.getUserById(purchaseDto.getUser().getId());
-        boolean permissionCanceled = user.getRole().getPermissions().stream().anyMatch(permission -> permission.getName().equals(NamePermissions.PURCHASE_CANCEL));
+        boolean permissionCanceled = user.getRole().getPermissions().stream().anyMatch(permission -> permission.getName().equals(NamePermissions.PURCHASE_CANCELED));
         if (!permissionCanceled)
             throw new BadRequestException("No tienes permisos para cancelar la compra");
 

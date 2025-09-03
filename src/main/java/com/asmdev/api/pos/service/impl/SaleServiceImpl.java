@@ -126,7 +126,7 @@ public class SaleServiceImpl implements SaleService {
         }
 
         UserEntity user = this.userService.getUserById(saleDto.getUser().getId());
-        boolean isPermissionCanceled = user.getRole().getPermissions().stream().anyMatch(permission -> permission.getName().equals(NamePermissions.SALE_CANCEL));
+        boolean isPermissionCanceled = user.getRole().getPermissions().stream().anyMatch(permission -> permission.getName().equals(NamePermissions.SALE_CANCELED));
         if (!isPermissionCanceled)
             throw new BadRequestException("No tienes permisos para cancelar esta venta");
 
